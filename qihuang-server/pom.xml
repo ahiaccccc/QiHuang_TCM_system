@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>
+            <version>8.0.33</version>
         </dependency>
 <!--        借助注解的方式，在编译时自动生成 Java 代码，从而减少样板代码（如 getter、setter、构造函数等）的编写-->
         <dependency>

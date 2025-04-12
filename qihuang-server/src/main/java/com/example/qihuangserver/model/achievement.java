@@ -21,8 +21,8 @@ public class achievement {
     @Column(name = "name", length = 255)
     private String name;
 
-    @Column(name = "condition", length = 255)
-    private String condition;
+    @Column(name = "conditions", length = 255)
+    private String conditions;
 
     @Column(name = "icon_url", length = 255)
     private String iconUrl;
