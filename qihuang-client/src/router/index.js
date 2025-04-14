@@ -36,6 +36,22 @@ const router = createRouter({
       name: 'testConnection',
       component: () => import('../views/testConnection.vue'),
     },
+    {
+      path: '/classics',
+      name: 'classics',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/ClassicsView.vue'),
+    },
+    {
+      path: '/classic-detail',
+      name: 'classic-detail',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/ClassicDetail.vue'),
+    },
 
   ],
 })
