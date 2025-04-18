@@ -43,7 +43,7 @@ public class ConversationService {
         Conversation conversation = new Conversation();
         User user = new User();
         Long userId = 100000005L;
-        user.setId(userId);  // 固定的 user_id
+        user.setUserId(userId);  // 固定的 user_id
         user.setUsername("pyaaa");  // 固定的 username
         conversation.setUser(user);
         conversation.setTitle("新对话");
