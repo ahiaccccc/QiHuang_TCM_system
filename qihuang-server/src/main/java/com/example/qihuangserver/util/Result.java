@@ -1,4 +1,4 @@
-package com.example.qihuangserver.utils;
+package com.example.qihuangserver.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

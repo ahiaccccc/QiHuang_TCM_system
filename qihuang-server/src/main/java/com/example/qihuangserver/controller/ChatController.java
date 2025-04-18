@@ -89,7 +89,7 @@ public class ChatController {
                 }
                 if (conversation == null || conversation.getUpdatedAt().isBefore(now.minusSeconds(1800))) {
                     User user = new User();
-                    user.setId(userId);
+                    user.setUserId(userId);
                     user.setUsername(username);
 
                     conversation = new Conversation();

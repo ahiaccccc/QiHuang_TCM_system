@@ -1,4 +1,4 @@
-package com.example.qihuangserver.utils;
+package com.example.qihuangserver.util;
 
 public enum ResultCode {
     SUCCESS(200, "success"),
