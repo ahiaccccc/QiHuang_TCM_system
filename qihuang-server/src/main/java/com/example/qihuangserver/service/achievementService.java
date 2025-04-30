@@ -1,7 +1,7 @@
 package com.example.qihuangserver.service;
 
-import com.example.qihuangserver.model.achievement;
-import com.example.qihuangserver.repository.achievementRepository;
+import com.example.qihuangserver.model.Achievement;
+import com.example.qihuangserver.repository.AchievementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +11,14 @@ import java.util.Optional;
 public class achievementService {
 
     @Autowired
-    private achievementRepository achievementRepository;
+    private AchievementRepository achievementRepository;
 
 
-    public Optional<achievement> findById(Integer id) {
+    public Optional<Achievement> findById(Integer id) {
         return achievementRepository.findById(id);
     }
 
-    public achievement save(achievement achievement) {
+    public Achievement save(Achievement achievement) {
         return achievementRepository.save(achievement);
     }
 

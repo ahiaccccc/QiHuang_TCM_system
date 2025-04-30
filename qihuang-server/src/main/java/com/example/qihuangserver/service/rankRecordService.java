@@ -1,7 +1,7 @@
 package com.example.qihuangserver.service;
 
-import com.example.qihuangserver.model.rankRecord;
-import com.example.qihuangserver.repository.rankRecordRepository;
+import com.example.qihuangserver.model.RankRecord;
+import com.example.qihuangserver.repository.RankRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +11,14 @@ import java.util.Optional;
 public class rankRecordService {
 
     @Autowired
-    private rankRecordRepository rankRecordRepository;
+    private RankRecordRepository rankRecordRepository;
 
 
-    public Optional<rankRecord> findById(Integer id) {
+    public Optional<RankRecord> findById(Integer id) {
         return rankRecordRepository.findById(id);
     }
 
-    public rankRecord save(rankRecord rankRecord) {
+    public RankRecord save(RankRecord rankRecord) {
         return rankRecordRepository.save(rankRecord);
     }
 

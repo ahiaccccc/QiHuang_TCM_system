@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Builder
 @Document(collection = "herbs")
-public class herb {
+public class Herb {
 
     @Id
     private String id;

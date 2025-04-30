@@ -1,17 +1,17 @@
 package com.example.qihuangserver.service;
 
 import com.example.qihuangserver.model.pushRecord;
-import com.example.qihuangserver.repository.pushRecordRepository;
+import com.example.qihuangserver.repository.PushRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class pushRecordService {
+public class PushRecordService {
 
     @Autowired
-    private pushRecordRepository pushRecordRepository;
+    private PushRecordRepository pushRecordRepository;
 
 
     public Optional<pushRecord> findById(Integer id) {
