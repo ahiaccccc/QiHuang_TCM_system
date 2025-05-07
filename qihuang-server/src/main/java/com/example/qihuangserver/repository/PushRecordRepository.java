@@ -1,16 +1,16 @@
 package com.example.qihuangserver.repository;
 
-import com.example.qihuangserver.model.rankRecord;
+import com.example.qihuangserver.model.pushRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface rankRecordRepository extends JpaRepository<rankRecord, Integer> {
-    Optional<rankRecord> findById(Integer id);
+public interface PushRecordRepository extends JpaRepository<pushRecord, Integer> {
+    Optional<pushRecord> findById(Integer id);
 
-    rankRecord save(rankRecord rankRecord);
+    pushRecord save(pushRecord pushRecord);
 
     void deleteById(Integer id);
 

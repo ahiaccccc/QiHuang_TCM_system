@@ -3,7 +3,6 @@ package com.example.qihuangserver.model;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import jakarta.persistence.*;
-import java.util.Date;
 
 @Component
 @AllArgsConstructor
@@ -12,20 +11,19 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
-@Table(name = "ranking_record")
-public class rankRecord {
+@Table(name = "achievement")
+public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "name", length = 255)
+    private String name;
 
-    @Column(name = "score")
-    private Integer score;
+    @Column(name = "conditions", length = 255)
+    private String conditions;
 
-    @Column(name = "time")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date time;
+    @Column(name = "icon_url", length = 255)
+    private String iconUrl;
 }

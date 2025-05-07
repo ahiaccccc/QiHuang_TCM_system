@@ -3,6 +3,8 @@ package com.example.qihuangserver.model;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -12,8 +14,9 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
-@Table(name = "answer_record")
-public class answerRecord {
+@Table(name = "ranking_record")
+public class RankRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -21,19 +24,18 @@ public class answerRecord {
     @Column(name = "user_id")
     private Integer userId;
 
-    @Column(name = "number")
+    @Column
+    private Integer recordId;
+
+    @Column
     private Integer number;
 
-    @Column(name = "correct")
-    private Integer correct;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "mode", columnDefinition = "ENUM('practice','rank')")
-    private playMode mode;
+
+    @Column(name = "score")
+    private double score;
 
     @Column(name = "time")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date time;
-
-
+    private LocalDateTime time;
 }

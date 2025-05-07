@@ -1,5 +1,7 @@
 package com.example.qihuangserver.controller;
 
+import com.example.qihuangserver.dto.zhongyizhishiwenda.ConversationDTO;
+import com.example.qihuangserver.dto.zhongyizhishiwenda.MessageDTO;
 import com.example.qihuangserver.model.ChatRequest;
 import com.example.qihuangserver.model.Conversation;
 import com.example.qihuangserver.model.Message;
@@ -18,13 +20,15 @@ import org.springframework.web.client.ResourceAccessException;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/chat")
 public class ChatController {
     @Autowired
@@ -39,6 +43,42 @@ public class ChatController {
 
     private final String API_URL = "http://10.2.8.77:3000/v1/chat/completions";
     private final String API_KEY = "sk-93nWYhI8SrnXad5m9932CeBdDeDf4233B21d93D217095f22";
+    @GetMapping("/conversations")
+    public ResponseEntity<?> getConversations(@RequestParam Long userId) {
+        List<Conversation> conversations = conversationRepository
+                .findByUser_UserIdOrderByUpdatedAtDesc(userId);
+
+        // 打印每个会话的详细信息，看看数据是否正确
+        for (Conversation conversation : conversations) {
+            System.out.println("Conversation ID: " + conversation.getId() + ", Title: " + conversation.getTitle()+conversation.getUser().getUserId());
+        }
+
+
+        List<ConversationDTO> conversationDTOs = conversations.stream()
+                .map(c -> new ConversationDTO(c.getId(), c.getUser().getUserId(),c.getTitle()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(conversationDTOs);
+    }
+
+
+
+    @GetMapping("/conversations/{convId}")
+    public ResponseEntity<?> getMessagesByConversation(@PathVariable Long convId) {
+        List<MessageDTO> messages = messageRepository.findByConv_IdOrderByCreatedAtAsc(convId)
+                .stream()
+                .map(msg -> new MessageDTO(
+                        msg.getRole(),
+                        msg.getContent(),
+                        msg.getCreatedAt()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(messages);
+    }
+
+
+
 
     @PostMapping
     public ResponseEntity<String> chat(@RequestBody ChatRequest request) {
@@ -70,43 +110,41 @@ public class ChatController {
 
                 String reply = json.get("choices").get(0).get("message").get("content").asText();
 
-
-
-
                 Conversation conversation = null;
                 Long userId = 100000005L;
                 String username = "pyaaa";
 
-// 查询用户最近一次的对话
-                conversation = conversationRepository.findFirstByUserIdOrderByUpdatedAtDesc(userId).orElse(null);
+                // 查询用户最近一次的对话
+                conversation = conversationRepository.findFirstByUser_UserIdOrderByUpdatedAtDesc(userId).orElse(null);
 
-// 如果没有对话，或者最后更新时间超过30分钟，就新建对话
+                // 提取用户的第一条消息作为标题
+                String conversationTitle = null;
+                if (!request.getMessages().isEmpty()) {
+                    Map<String, String> lastUserMsg = request.getMessages().get(request.getMessages().size() - 1);
+                    conversationTitle = lastUserMsg.get("content").substring(0, Math.min(10, lastUserMsg.get("content").length()));
+                }
+
+                // 如果没有对话，或者最后更新时间超过30分钟，就新建对话
                 Instant now = Instant.now();
-                if(Boolean.TRUE.equals(request.getForceNew())){
-
+                if (Boolean.TRUE.equals(request.getForceNew())) {
                     conversation = null; // 让它强制走新建逻辑
-
                 }
                 if (conversation == null || conversation.getUpdatedAt().isBefore(now.minusSeconds(1800))) {
                     User user = new User();
-                    user.setId(userId);
+                    user.setUserId(userId);
                     user.setUsername(username);
 
                     conversation = new Conversation();
                     conversation.setUser(user);
-                    conversation.setTitle("新对话");
+                    conversation.setTitle(conversationTitle != null ? conversationTitle : "新对话"); //使用提取的标题
                     conversation.setCreatedAt(now);
                     conversation.setUpdatedAt(now);
                     conversation = conversationRepository.save(conversation);
-                } else
-                {
-
+                } else {
                     // 有效对话，更新 updatedAt
                     conversation.setUpdatedAt(now);
                     conversation = conversationRepository.save(conversation);
                 }
-
-
 
                 // 保存用户消息
                 Map<String, String> lastUserMsg = request.getMessages().get(request.getMessages().size() - 1);
@@ -119,7 +157,6 @@ public class ChatController {
                 userMsg.setCreatedAt(Instant.now());
                 messageRepository.save(userMsg);
 
-
                 // 保存 AI 回复
                 Message aiMsg = new Message();
                 aiMsg.setConv(conversation);
@@ -130,12 +167,9 @@ public class ChatController {
                 aiMsg.setCreatedAt(Instant.now());
                 messageRepository.save(aiMsg);
 
-
-
-
                 logger.log(Level.INFO, "Assistant Reply: " + reply);
-
                 return ResponseEntity.ok(reply);  // 直接返回文本内容
+
             } else {
                 logger.log(Level.WARNING, "Unexpected response status: " + response.getStatusCode());
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());

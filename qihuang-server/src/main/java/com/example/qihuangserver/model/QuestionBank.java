@@ -13,11 +13,14 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "question_bank")
-public class questionBank {
+public class QuestionBank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column
+    private Integer classId;
 
     @Column(name = "question", columnDefinition = "TEXT")
     private String question;

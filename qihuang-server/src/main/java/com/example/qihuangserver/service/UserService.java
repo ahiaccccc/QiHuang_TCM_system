@@ -13,6 +13,7 @@ import com.example.qihuangserver.repository.UserRepository;
 import com.example.qihuangserver.util.PasswordUtil;
 import com.example.qihuangserver.util.SimpleTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
+
+    @Value("${avatar.upload.dir}")
+    private String uploadDir;
+
+    @Value("${avatar.access.path}")
+    private String accessPath;
 
     @Autowired
     public UserService(UserRepository userRepository, JavaMailSender mailSender) {
@@ -185,34 +192,41 @@ public class UserService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException("用户不存在"));
 
-            // 2. 获取用户当前头像路径
-            String currentAvatarPath = user.getAvatar();
+//            // 2. 定义路径配置
+//            String saveDir = "src/main/resources/public/avatars"; // 实际存储路径
+//            String accessPath = "/avatars/"; // 前端访问路径
 
-            // 2. 保存目录
-            String saveDir = "classpath:/static/avatars/";
-            String accessPath = "/avatars/";
+            // 3. 准备上传目录
+//            Path uploadPath = Paths.get(saveDir).toAbsolutePath().normalize();
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadPath);
 
-            // 3. 如果存在历史头像，删除旧头像
-            if (currentAvatarPath != null && !currentAvatarPath.isEmpty()) {
-                // 构建旧头像的完整路径
-                Path oldAvatarPath = Paths.get(saveDir, currentAvatarPath.replace(accessPath, ""));
-                // 删除旧头像文件
-                Files.deleteIfExists(oldAvatarPath);
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                String oldAvatarPath = user.getAvatar().replace(accessPath, ""); // 移除访问前缀
+                Path oldAvatarFilePath = uploadPath.resolve(oldAvatarPath).normalize();
+
+                // 安全检查：确保要删除的文件在预期的目录内
+                if (!oldAvatarFilePath.startsWith(uploadPath)) {
+                    throw new SecurityException("无效的文件路径");
+                }
+
+                // 尝试删除旧头像文件
+                try {
+                    Files.deleteIfExists(oldAvatarFilePath);
+                } catch (IOException e) {
+                    // 根据需求决定是否抛出异常或继续执行
+                }
             }
 
-            // 2. 上传目录
-            Path uploadPath = Paths.get(saveDir).toAbsolutePath().normalize();
-
-            // 3. 生成唯一文件名
+            // 4. 生成唯一文件名
             String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
             String fileName = userId + "_" + System.currentTimeMillis() + "." + fileExtension;
 
-            // 4. 保存文件
+            // 5. 保存文件
             Path targetLocation = uploadPath.resolve(fileName);
             file.transferTo(targetLocation);
 
-            // 5. 更新用户头像路径（使用可访问的web路径）
-
+            // 6. 更新数据库
             String avatarPath = accessPath + fileName;
             user.setAvatar(avatarPath);
             userRepository.save(user);

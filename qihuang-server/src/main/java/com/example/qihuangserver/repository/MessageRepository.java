@@ -17,4 +17,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findByParentMsgId(Long parentMsgId);
 
     List<Message> findByConvOrderByCreatedAtAsc(Conversation conversation);
+    List<Message> findByConv_IdOrderByCreatedAtAsc(Long convId);
+
 }
