@@ -1,0 +1,292 @@
+.chat-container {
+  display: flex;
+  height: 97vh;
+  width: 99vw;
+  margin: 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.conversation-item {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.conversation-wrapper {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.conversation-wrapper:hover {
+  border-color: #4a90e2;
+}
+
+.conversation-wrapper.active {
+  border-color: #4a90e2;
+  background-color: #d0e6ff;
+}
+
+.conversation-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.ellipsis-btn {
+  padding: 0 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  border-left: 1px solid #ddd;
+}
+
+.ellipsis-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 100;
+  min-width: 100px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+.new-conversation-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #4a90e2;
+  color: #0c0c0c;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.new-conversation-btn:hover {
+  background-color: #0688f9;
+}
+
+.chat-window {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.assistant {
+  justify-content: flex-start;
+}
+
+.bubble {
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.bubble pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.bubble code {
+  font-family: 'Courier New', monospace;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.bubble blockquote {
+  border-left: 3px solid #ddd;
+  padding-left: 10px;
+  margin-left: 0;
+  color: #666;
+}
+
+.bubble table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.bubble table,
+.bubble th,
+.bubble td {
+  border: 1px solid #ddd;
+}
+
+.bubble th,
+.bubble td {
+  padding: 8px;
+  text-align: left;
+}
+
+.bubble ul,
+.bubble ol {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.bubble h1,
+.bubble h2,
+.bubble h3 {
+  margin: 15px 0 10px;
+}
+
+.message.user .bubble {
+  background-color: #d1e7ff;
+  text-align: left;
+}
+
+.message.assistant .bubble {
+  background-color: #e6ffe6;
+  text-align: left;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.user-input {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  margin-right: 10px;
+}
+
+.user-input:focus {
+  border-color: #4a90e2;
+}
+
+.send-btn {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.send-btn:hover {
+  background-color: #357ab7;
+}
+
+.icon-img {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+}
+
+.loading-dots span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #666;
+  margin: 0 3px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
