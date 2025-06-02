@@ -52,6 +52,16 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Classic/ClassicDetail.vue'),
     },
+    {
+      path: '/quiz-select',
+      name: 'quiz-select',
+      component:()=> import('../views/Quiz/QuizView.vue'),
+    },
+    {
+      path: '/quiz-answer',
+      name: 'quiz-answer',
+      component:()=> import('../views/Quiz/QuizAnswerSheet.vue'),
+    }
 
   ],
 })
