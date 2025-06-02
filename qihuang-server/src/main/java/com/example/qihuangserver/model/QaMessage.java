@@ -39,10 +39,8 @@ public class QaMessage {
     @Column(name = "is_current")
     private Boolean isCurrent;
 
-    @ColumnDefault("'neutral'")
-    @Lob
-    @Column(name = "feedback")
-    private String feedback;
+    @Column(length = 20)
+    private String feedback = "neutral";
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -51,7 +49,8 @@ public class QaMessage {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    // 添加级联删除配置
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // 允许序列化正向关
     private Set<QaMessage> qaMessages = new LinkedHashSet<>();
 

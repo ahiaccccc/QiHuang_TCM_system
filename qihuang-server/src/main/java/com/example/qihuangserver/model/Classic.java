@@ -1,5 +1,6 @@
 package com.example.qihuangserver.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,11 +24,10 @@ public class Classic {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "author", length = 100)
-    private String author;
 
-    @Column(name = "dynasty", nullable = false, length = 50)
-    private String dynasty;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book  book;
 
     @Lob
     @Column(name = "original_text", nullable = false)
@@ -41,43 +41,7 @@ public class Classic {
     @Column(name = "translate_text", nullable = false)
     private String translateText;
 
-    @Column(name = "cover_url", length = 512)
-    private String coverUrl;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
-    private Instant createdAt;
-
-    @OneToMany(mappedBy = "classic")
-    private Set<Collected> collecteds = new LinkedHashSet<>();
-
-    @Lob
-    @Column(name = "category")
-    private String category;
-
-    @Lob
-    @Column(name = "summary")
-    private String summary;
-
-    @OneToMany(mappedBy = "classic")
-    @JsonManagedReference // 标记为正向引用
-    private Set<QaSession> qaSessions = new LinkedHashSet<>();
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
 
     public Long getId() {
         return id;
@@ -95,21 +59,6 @@ public class Classic {
         this.title = title;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getDynasty() {
-        return dynasty;
-    }
-
-    public void setDynasty(String dynasty) {
-        this.dynasty = dynasty;
-    }
 
     public String getOriginalText() {
         return originalText;
@@ -135,35 +84,11 @@ public class Classic {
         this.translateText = translateText;
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
+    public Book getBook() {
+        return book;
     }
 
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Set<Collected> getCollecteds() {
-        return collecteds;
-    }
-
-    public void setCollecteds(Set<Collected> collecteds) {
-        this.collecteds = collecteds;
-    }
-
-    public Set<QaSession> getQaSessions() {
-        return qaSessions;
-    }
-
-    public void setQaSessions(Set<QaSession> qaSessions) {
-        this.qaSessions = qaSessions;
+    public void setBook(Book book) {
+        this.book = book;
     }
 }
