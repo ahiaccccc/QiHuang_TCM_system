@@ -27,7 +27,7 @@ public class AdminCollectedService {
         return result.map(collected -> {
             AdminCollectedDTO dto = new AdminCollectedDTO();
             dto.setCollectedId(collected.getId());
-            dto.setUserId(collected.getUser().getId());
+            dto.setUserId(collected.getUser().getUserId());
             dto.setUserName(collected.getUser().getUsername());
             dto.setClassicId(collected.getClassic().getId());
             dto.setClassicTitle(collected.getClassic().getTitle());

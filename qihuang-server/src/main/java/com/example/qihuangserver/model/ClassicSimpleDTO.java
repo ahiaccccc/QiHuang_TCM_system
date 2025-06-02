@@ -7,11 +7,6 @@ import lombok.Data;
 public class ClassicSimpleDTO {
     private Long id;
     private String title;
-    private String author;
-    private String dynasty;
-    private String coverUrl;
-    private String category;
-    private String summary;
 
     public static ClassicSimpleDTO fromEntity(Classic classic) {
         ClassicSimpleDTO dto = new ClassicSimpleDTO();
