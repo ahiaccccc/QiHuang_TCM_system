@@ -16,27 +16,21 @@ public class ClassicController {
     private ClassicService classicService;
 
     @GetMapping
-    public ResponseEntity<PageDTO<ClassicSimpleDTO>> getClassics(
+    public ResponseEntity<PageDTO<Classic>> getClassics(
+            @PathVariable("bookId") Integer bookId,
             @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam int size) {
 
-        Page<Classic> classics = classicService.getPaginatedClassics(page, size, category, keyword);
-        return ResponseEntity.ok(PageDTO.fromPage(classics, ClassicSimpleDTO::fromEntity));
+        Page<Classic> classics = classicService.getPaginatedClassicsByBook(bookId, page, size);
+        return ResponseEntity.ok(PageDTO.fromPage(classics, classic -> classic));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Classic> getClassicById(@PathVariable Long id) {
-        return classicService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Classic> getClassicById(@PathVariable("id") Long id) {
+        Classic classic = classicService.getClassicById(id);
+        return ResponseEntity.ok(classic);
     }
 
-    @PostMapping("/autofill")
-    public void autoFill() {
-        classicService.autoClassifyAndSummarize();
-    }
 
     @PostMapping
     public Classic create(@RequestBody Classic classic) {
@@ -54,9 +48,5 @@ public class ClassicController {
         classicService.delete(id);
     }
 
-    @GetMapping("/{classicId}")
-    public ResponseEntity<Classic> getClassicDetail(@PathVariable Long classicId) {
-        return ResponseEntity.ok(classicService.getClassicById(classicId));
-    }
 }
 

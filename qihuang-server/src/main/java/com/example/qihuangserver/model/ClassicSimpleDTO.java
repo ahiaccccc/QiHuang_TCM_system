@@ -17,11 +17,6 @@ public class ClassicSimpleDTO {
         ClassicSimpleDTO dto = new ClassicSimpleDTO();
         dto.setId(classic.getId());
         dto.setTitle(classic.getTitle());
-        dto.setAuthor(classic.getAuthor());
-        dto.setDynasty(classic.getDynasty());
-        dto.setCoverUrl(classic.getCoverUrl());
-        dto.setCategory(classic.getCategory());
-        dto.setSummary(classic.getSummary());
         return dto;
     }
 }
