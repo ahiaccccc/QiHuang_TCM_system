@@ -1,244 +1,324 @@
 <template>
+  <div class="xuanzhuti">
+    <img
+      class="back"
+      src="https://c.animaapp.com/mabzoynihMfxud/img/back.png"
+    />
+    <div class="hero-section">
+      <div class="main-area">
+        <div class="frame"></div>
+        <div class="div">
+          <div class="div-wrapper">
+            <p class="p"><span class="text-wrapper">| </span> <span class="span">{{ quizClassName }}</span></p>
+          </div>
+          <div class="frame-2">
+            <div class="overlap">
+              <div class="frame-3">
+                <div class="frame-4">
+                  <div class="text-wrapper-2">{{currentIndex+1}} . &nbsp;{{ currentQuestion.question }}</div>
+                  <div class="text-wrapper-3">
+                    <div
+                      v-for="(option, index) in options"
+                      :key="index"
+                      class="option-item"
+                      @click="selectOption(index)"
+                      :class="{ 'selected': answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index}"
+                    >
+                      <input
+                        type="radio"
+                        :name="'question-' + currentIndex"
+                        :value="index"
+                        :checked="answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index"
+                        @change="selectOption(index)"
+                      />
+                      <span class="option-label">&nbsp;&nbsp;
+                        {{ String.fromCharCode('A'.charCodeAt(0) + index) }}.
+                        &nbsp; {{ option }}
+                      </span>
+                      <br>
 
-  <html>
-
-  <!-- <head>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    />
-    <meta charset="utf-8" />
-    <link
-      rel="stylesheet"
-      href="globals.css"
-    />
-    <link
-      rel="stylesheet"
-      href="styleguide.css"
-    />
-    <link
-      rel="stylesheet"
-      href="style.css"
-    />
-  </head> -->
-
-  <body>
-    <div class="xuanzhuti">
-      <img
-        class="back"
-        src="https://c.animaapp.com/mb7y23llrri4PN/img/back.png"
-      />
-      <div class="hero-section">
-        <div class="main-area">
-          <div class="frame"></div>
-          <div class="div">
-            <div class="div-wrapper">
-              <p class="p"><span class="text-wrapper">| </span> <span class="span">答题主题一</span></p>
-            </div>
-            <div class="frame-2">
-              <div class="overlap">
-                <div class="frame-3">
-                  <div class="frame-4">
-                    <div class="text-wrapper-2">今天周几了（ ）。</div>
-                    <p class="text-wrapper-3">
-                      &nbsp;&nbsp;&nbsp;&nbsp; ○ 周一<br /><br />&nbsp;&nbsp;&nbsp;&nbsp; ○ 周二<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;
-                      ○ 周六<br /><br />&nbsp;&nbsp;&nbsp;&nbsp; ○ 周三
-                    </p>
-                  </div>
-                  <div class="overlap-group">
-                    <div class="frame-5">
-                      <div class="button-blue">
-                        <div class="text-wrapper-4">上一题</div>
-                      </div>
-                      <div class="text-wrapper-5">1/20</div>
-                      <div class="button-blue">
-                        <div class="text-wrapper-4">下一题</div>
-                      </div>
+                      <!-- &nbsp;&nbsp;&nbsp;&nbsp; ○ {{ option }} ● -->
                     </div>
-                    <img
-                      class="line"
-                      src="https://c.animaapp.com/mb7y23llrri4PN/img/line-1.svg"
-                    />
                   </div>
                 </div>
-                <div class="frame-6">
-                  <div class="text-wrapper-6">单选题</div>
+                <div class="overlap-group">
+                  <div class="frame-5">
+                    <div
+                      class="button-blue"
+                      @click="prevQuestion"
+                    >
+                      <div class="text-wrapper-4">上一题</div>
+                    </div>
+                    <div class="text-wrapper-5">{{ currentIndex + 1 }}/{{ questions.length }}</div>
+                    <div
+                      class="button-blue"
+                      @click="nextQuestion"
+                    >
+                      <div class="text-wrapper-4">下一题</div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-              <div class="element-wrapper">
-                <p class="element"><span class="span"> 倒计时：</span> <span class="text-wrapper-7">00:31:85</span></p>
+              <div class="frame-6">
+                <div class="text-wrapper-6">单选题</div>
               </div>
-              <div class="frame-7">
-                <div class="text-wrapper-8">答题卡</div>
-                <div class="frame-8">
-                  <div class="frame-9">
-                    <img
-                      class="rectangle"
-                      src="https://c.animaapp.com/mb7y23llrri4PN/img/rectangle-91911-1.svg"
-                    />
-                    <div class="text-wrapper-9">未作答</div>
-                  </div>
-                  <div class="frame-9">
-                    <div class="text-wrapper-10">已作答</div>
-                    <img
-                      class="img"
-                      src="https://c.animaapp.com/mb7y23llrri4PN/img/rectangle-91911.svg"
-                    />
-                  </div>
+            </div>
+            <div class="element-wrapper">
+              <p class="element"><span class="span"> 倒计时：</span> <span class="text-wrapper-7">{{ formattedTime }}</span></p>
+            </div>
+            <div class="frame-7">
+              <div class="text-wrapper-8">答题卡</div>
+              <div class="frame-8">
+                <div class="frame-9">
+                  <img
+                    class="rectangle"
+                    src="https://c.animaapp.com/mbf6k53cFAgMzt/img/rectangle-91911-1.svg"
+                  />
+                  <div class="text-wrapper-9">未作答</div>
                 </div>
-                <div class="frame-10">
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
-                  <div class="frame-11">
-                    <div class="text-wrapper-11">1</div>
-                  </div>
+                <div class="frame-9">
+                  <div class="text-wrapper-10">已作答</div>
+                  <img
+                    class="img"
+                    src="https://c.animaapp.com/mbf6k53cFAgMzt/img/rectangle-91911.svg"
+                  />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="navigation">
-        <div class="nav-container">
-          <div class="left-column">
-            <div class="logo">
-              <img
-                class="logo-2"
-                src="https://c.animaapp.com/mb7y23llrri4PN/img/logo-1.png"
-              />
-              <div class="text-wrapper-12">岐黄慧问</div>
-            </div>
-            <div class="nav-links">
-              <div class="nav-link">
-                <div class="text-wrapper-13">AI问答</div>
+              <div class="frame-10">
+                <div
+                  v-for="(question, index) in questions"
+                  :key="index"
+                  class="frame-11"
+                  :class="{
+                    'current': currentIndex === index,
+                    'answered': answers[index] !== '*',
+                    'unanswered':  answers[index] === '*'
+                  }"
+                  @mouseover="hoverIndex = index"
+                  @mouseleave="hoverIndex = -1"
+                  @click="goToQuestion(index)"
+                >
+                  <div class="text-wrapper-11">{{ index + 1 }}</div>
+                </div>
               </div>
-              <div class="nav-link-2">
-                <div class="text-wrapper-14">典籍解读</div>
-              </div>
-              <div class="nav-link-2">
-                <div class="text-wrapper-14">养生方案</div>
-              </div>
-              <div class="nav-link-2">
-                <div class="text-wrapper-15">答题挑战</div>
-              </div>
-            </div>
-          </div>
-          <div class="right-column">
-            <div class="icon-button"><img
-                class="bell"
-                src="https://c.animaapp.com/mb7y23llrri4PN/img/bell.svg"
-              /></div>
-            <div class="icon-button">
-              <img
-                class="heart"
-                src="https://c.animaapp.com/mb7y23llrri4PN/img/heart.svg"
-              />
-            </div>
-            <div class="profile">
-              <div class="profile-avatar"></div>
-              <div class="profile-details">
-                <div class="username">小奇</div>
-                <input
-                  class="email"
-                  placeholder="qixiaoxiao@136.com"
-                  type="email"
-                />
-              </div>
-              <img
-                class="caret-down"
-                src="https://c.animaapp.com/mb7y23llrri4PN/img/caretdown.svg"
-              />
             </div>
           </div>
         </div>
       </div>
     </div>
-  </body>
+    <div class="navigation">
+      <div class="nav-container">
+        <div class="left-column">
+          <div class="logo">
 
-  </html>
+            <div class="text-wrapper-12">岐黄慧问</div>
+          </div>
+          <div class="nav-links">
+            <div class="nav-link">
+              <div class="text-wrapper-13">AI问答</div>
+            </div>
+            <div class="nav-link-2">
+              <div class="text-wrapper-14">典籍解读</div>
+            </div>
+            <div class="nav-link-2">
+              <div class="text-wrapper-14">养生方案</div>
+            </div>
+            <div class="nav-link-2">
+              <div class="text-wrapper-15">答题挑战</div>
+            </div>
+          </div>
+        </div>
+        <div class="right-column">
+          <div class="icon-button"></div>
+          <div class="icon-button">
 
+          </div>
+          <div class="profile">
+            <div class="profile-avatar"></div>
+            <div class="profile-details">
+              <div class="username">小奇</div>
+              <input
+                class="email"
+                placeholder="qixiaoxiao@136.com"
+                type="email"
+              />
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-
 <script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuizStore } from '@/stores/quiz'
+
+const route = useRouter()
+const quizStore = useQuizStore()
+
+const quizClassName = ref('')
+const questions = ref([])
+const answers = ref([])
+const currentIndex = ref(0)
+const selectedOption = ref(-1)
+const hoverIndex = ref(-1)
+const timeLeft = ref(1800) // 30分钟，单位秒
+
+// 计算格式化时间
+const formattedTime = computed(() => {
+  const minutes = Math.floor(timeLeft.value / 60)
+  const seconds = timeLeft.value % 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+})
+
+// 当前问题
+const currentQuestion = computed(() => {
+  // console.log('currentquestion:', questions.value[currentIndex.value])
+  return questions.value[currentIndex.value] || {}
+})
+
+// 当前问题的选项
+const options = computed(() => {
+  if (!currentQuestion.value.options) return []
+  return currentQuestion.value.options.split('\\n')
+})
+
+//  添加页面卸载确认功能
+const beforeUnloadHandler = (e) => {
+  const hasUnansweredQuestions = true
+
+  if (hasUnansweredQuestions) {
+    const confirmationMessage = '您有未完成的答题进度，离开页面将丢失当前进度。确定要离开吗？'
+    e.preventDefault()
+    e.returnValue = confirmationMessage
+    return confirmationMessage
+  }
+}
+
+// 初始化数据
+onMounted(() => {
+  //判断currentQuiz是否存在
+  if (!quizStore.currentQuiz) {
+    console.error('当前测验不存在或未加载')
+
+    route.push({ name: 'quiz-select' }) // 跳转到测验列表页面
+    return
+  }
+
+  quizClassName.value = quizStore.currentClassName
+  console.log('currentQuiz:', quizStore.currentQuiz)
+  questions.value = quizStore.currentQuiz.questions || []
+  answers.value = quizStore.currentQuiz.answers.split('')
+  console.log('answers:', answers.value)
+
+  // 找到第一个未回答的题目
+  const firstUnansweredIndex = answers.value.findIndex((answer) => answer === '*')
+  currentIndex.value =
+    firstUnansweredIndex !== -1 ? firstUnansweredIndex : questions.value.length - 1
+
+  // 设置当前已选择的选项
+  if (answers.value[currentIndex.value] !== '*') {
+    selectedOption.value = answers.value[currentIndex.value].charCodeAt(0) - 'A'.charCodeAt(0)
+  } else {
+    selectedOption.value = -1
+  }
+
+  // 启动计时器
+  const timer = setInterval(() => {
+    if (timeLeft.value > 0) {
+      timeLeft.value--
+    } else {
+      clearInterval(timer)
+    }
+  }, 1000)
+  window.addEventListener('beforeunload', beforeUnloadHandler)
+})
+// 组件卸载前移除事件监听器
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', beforeUnloadHandler)
+})
+
+// 选择选项
+const selectOption = (index) => {
+  selectedOption.value = index
+  answers.value[currentIndex.value] = String.fromCharCode('A'.charCodeAt(0) + index)
+}
+
+// 下一题
+const nextQuestion = () => {
+  if (currentIndex.value < questions.value.length - 1) {
+    currentIndex.value++
+    // 设置当前已选择的选项
+    if (answers.value[currentIndex.value] !== 'A' && answers.value[currentIndex.value] !== '*') {
+      selectedOption.value = answers.value[currentIndex.value].charCodeAt(0) - 'A'.charCodeAt(0)
+    } else {
+      selectedOption.value = -1
+    }
+  }
+}
+
+// 上一题
+const prevQuestion = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+    // 设置当前已选择的选项
+    if (answers.value[currentIndex.value] !== 'A' && answers.value[currentIndex.value] !== '*') {
+      selectedOption.value = answers.value[currentIndex.value].charCodeAt(0) - 'A'.charCodeAt(0)
+    } else {
+      selectedOption.value = -1
+    }
+  }
+}
+
+// 跳转到指定题目
+const goToQuestion = (index) => {
+  currentIndex.value = index
+  // 设置当前已选择的选项
+  if (answers.value[currentIndex.value] !== 'A' && answers.value[currentIndex.value] !== '*') {
+    selectedOption.value = answers.value[currentIndex.value].charCodeAt(0) - 'A'.charCodeAt(0)
+  } else {
+    selectedOption.value = -1
+  }
+}
 </script>
 
-<style >
-@import url('https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css');
-* {
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
+<style>
+/* 原有样式保持不变，添加以下新样式 */
+
+.option-item {
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
 }
-html,
-body {
-  margin: 0px;
-  height: 100%;
+
+.option-item:hover {
+  background-color: rgba(92, 176, 106, 0.1);
 }
-/* a blue color as a generic focus style */
-button:focus-visible {
-  outline: 2px solid #4a90e2 !important;
-  outline: -webkit-focus-ring-color auto 5px !important;
+
+.option-item.selected {
+  background-color: rgba(92, 176, 106, 0.2);
 }
-a {
-  text-decoration: none;
+
+.frame-11 {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frame-11.current {
+  border: 2px solid #35565a;
+  background-color: rgba(92, 176, 106, 0.3);
+}
+
+.frame-11.answered {
+  background-color: #f0f0f0;
+}
+
+.frame-11.unanswered:hover {
+  background-color: rgba(92, 176, 106, 0.2);
 }
 :root {
   --shenlan: rgba(53, 86, 90, 1);
@@ -278,6 +358,29 @@ a {
   --sususmall-line-height: normal;
   --sususmall-font-style: normal;
 }
+</style>
+
+
+<style lang="scss" scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css');
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+/* a blue color as a generic focus style */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+
 /* ========================================================== */
 
 .xuanzhuti {

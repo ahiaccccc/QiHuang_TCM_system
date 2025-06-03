@@ -1,6 +1,5 @@
 package com.example.qihuangserver.controller;
 
-
 import com.example.qihuangserver.dto.ApiResponse;
 import com.example.qihuangserver.dto.question.AnswerRecordDTO;
 import com.example.qihuangserver.dto.question.QuestionBankDTO;
@@ -9,7 +8,8 @@ import com.example.qihuangserver.model.PlayMode;
 import com.example.qihuangserver.model.QuestionBank;
 import com.example.qihuangserver.service.AnswerRecordService;
 import com.example.qihuangserver.service.QuestionBankService;
-import com.example.qihuangserver.util.DataRequest;
+import com.example.qihuangserver.utils.DataRequest;
+import com.example.qihuangserver.utils.Result;
 import com.example.qihuangserver.util.SimpleTokenUtil;
 import jakarta.annotation.Resource;
 import org.springframework.http.ResponseEntity;
@@ -66,7 +66,7 @@ public class AnswerRecordController {
     }
 
     /**
-     * 初始化答题记录时调用的接口，此时检查是否有正在答的题目，有则返回器DTO，否则返回历史记录DTO
+     * 初始化答题记录时调用的接口，此时检查是否有正在答的题目，有则返回其DTO，否则返回历史记录DTO
      * @param authHeader
      * @return
      */
@@ -102,7 +102,15 @@ public class AnswerRecordController {
     }
 
 //    //批改某次答题情况，将正确题数存入correct属性
-//    @PostMapping("correctRecord")
-//    public
+    @PostMapping("finishRecord")
+    public Result finishRecord(@RequestBody DataRequest dataRequest) {
+        try {
+            AnswerRecord record = answerRecordService.finishAnswerRecord(dataRequest);
+            // 返回DTO或原始对象均可
+            return Result.success(record.getDTOExceptQuestions(), "批改完成");
+        } catch (Exception e) {
+        return Result.error("批改失败：" + e.getMessage());
+    }
+}
 
 }
