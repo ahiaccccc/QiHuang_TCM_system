@@ -34,13 +34,15 @@ public class QaSession {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "session")
+    // 添加级联删除配置
+    @OneToMany(mappedBy = "session",cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<QaMessage> qaMessages = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classic_id")
     @JsonBackReference // 标记为反向引用
     private Classic classic;
+
 
     public Long getId() {
         return id;

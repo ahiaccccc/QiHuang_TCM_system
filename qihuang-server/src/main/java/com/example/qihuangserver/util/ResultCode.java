@@ -5,7 +5,8 @@ public enum ResultCode {
     FAIL(400, "fail"),
     UNAUTHORIZED(401, "unauthorized"),
     NOT_FOUND(404, "not found"),
-    INTERNAL_SERVER_ERROR(500, "internal server error");
+    INTERNAL_SERVER_ERROR(500, "internal server error"),
+    ELSE_FAILED(405, "else error");
 
     private Integer code;
     private String message;

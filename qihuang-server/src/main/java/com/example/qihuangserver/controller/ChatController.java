@@ -144,36 +144,49 @@ public class ChatController {
                 return ResponseEntity.status(response.getStatusCode()).body("翻译API请求失败");
             }
 
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("翻译失败: " + e.getMessage());
         }
     }
 
-    //获取历史对话
+    //获取历史对话z
     @GetMapping("/conversations")
-    public ResponseEntity<?> getConversations(@RequestParam Long userId) {
-        List<Conversation> conversations = conversationRepository
-                .findByUser_UserIdOrderByUpdatedAtDesc(userId);
-
-        // 打印每个会话的详细信息，看看数据是否正确
-        for (Conversation conversation : conversations) {
-            System.out.println("Conversation ID: " + conversation.getId() + ", Title: " + conversation.getTitle()+conversation.getUser().getUserId());
+    public ResponseEntity<?> getConversations(@RequestParam Long userId, HttpServletRequest request) {
+        // 验证用户ID
+        if (userId == null) {
+            return ResponseEntity.badRequest().body("userId 不能为空");
         }
 
+        // 验证用户是否存在
+        if (!userRepository.existsById(userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("用户不存在");
+        }
 
-        List<ConversationDTO> conversationDTOs = conversations.stream()
-                .map(c -> new ConversationDTO(c.getId(), c.getUser().getUserId(),c.getTitle()))
-                .collect(Collectors.toList());
+        logger.info("获取用户收藏列表，userId: " + userId);
 
-        return ResponseEntity.ok(conversationDTOs);
+        try {
+            List<Conversation> conversations = conversationRepository
+                    .findByUser_UserIdOrderByUpdatedAtDesc(userId);
+
+            List<ConversationDTO> conversationDTOs = conversations.stream()
+                    .map(c -> new ConversationDTO(c.getId(), c.getUser().getUserId(), c.getTitle()))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(conversationDTOs);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "获取会话列表失败", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("获取会话列表失败: " + e.getMessage());
+        }
     }
 
 
 
     @GetMapping("/conversations/{convId}")
     @CrossOrigin(origins = {"http://localhost:4000", "http://127.0.0.1:4000"})
-    public ResponseEntity<?> getMessagesByConversation(@PathVariable Long convId) {
+    public ResponseEntity<?> getMessagesByConversation(@PathVariable Long convId,HttpServletRequest request) {
         List<MessageDTO> messages = messageRepository.findByConv_IdOrderByCreatedAtAsc(convId)
                 .stream()
                 .map(msg -> new MessageDTO(
@@ -378,7 +391,7 @@ public class ChatController {
     // 使用消息映射的方式，接收前端的消息并进行流式响应
     @MessageMapping("/chat/message")
     @CrossOrigin(origins = "http://localhost:4000")
-    public void streamMessage(String messageContent) {
+    public void streamMessage(String messageContent, @RequestBody Map<String, String> request) {
         // 解析消息
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode;
@@ -430,10 +443,12 @@ public class ChatController {
     @PostMapping(value = "/stream", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CrossOrigin(origins = "http://localhost:4000", allowedHeaders = "*", methods = {RequestMethod.POST})
     public SseEmitter streamResponse(
+            @RequestParam Long userId,
             @RequestParam("messages") String messagesJson,
             @RequestParam(value = "newConversation", defaultValue = "false") boolean newConversation,
             @RequestParam(value = "conversationId", required = false) Long conversationId,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
 
         SseEmitter emitter = new SseEmitter(600_000L);
         StringBuilder fullResponse = new StringBuilder();
@@ -461,7 +476,7 @@ public class ChatController {
             }
 
             // 保存用户消息并获取/创建对话
-            Conversation conversation = saveUserMessage(messages, conversationId, newConversation);
+            Conversation conversation = saveUserMessage(userId,messages, conversationId, newConversation);
 
             // 异步处理AI回复
             executorService.submit(() -> {
@@ -546,10 +561,10 @@ public class ChatController {
         return emitter;
     }
     // 修改后的辅助方法：保存用户消息并返回会话
-    private Conversation saveUserMessage(List<Map<String, String>> messages, Long conversationId, boolean newConversation) {
+    private Conversation saveUserMessage(Long userId,List<Map<String, String>> messages, Long conversationId, boolean newConversation) {
         Instant now = Instant.now();
         Conversation conversation;
-        Long userId = 100000005L;
+
         String username = "pyaaa";
 
         if (newConversation || conversationId == null) {
@@ -666,7 +681,8 @@ public class ChatController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadAttachment(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "msgId", required = false) Long msgId) {
+            @RequestParam(value = "msgId", required = false) Long msgId
+            , @RequestBody Map<String, String> request) {
         try {
             // 创建临时目录
             String tempDir = System.getProperty("java.io.tmpdir") + "/chat_uploads/";

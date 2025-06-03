@@ -1,160 +1,304 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="auth-form">
-    <h2 class="form-title">用户注册</h2>
+  <div class="register-container">
+    <Navi />
 
-    <div class="form-group">
-      <input
-        v-model="form.username"
-        placeholder="Username"
-        class="form-input"
-      />
+    <div class="register-content">
+      <div class="register-form-section">
+        <div class="register-form-container">
+          <h2 class="register-title">注册</h2>
+
+          <form @submit.prevent="handleRegister" class="register-form">
+            <div class="register-form-group">
+              <label class="register-form-label">邮箱</label>
+              <input
+                v-model="registerForm.email"
+                class="register-form-input"
+                placeholder="请输入邮箱"
+              />
+            </div>
+
+            <div class="register-form-group">
+              <label class="register-form-label">用户名</label>
+              <input
+                v-model="registerForm.username"
+                class="register-form-input"
+                placeholder="请输入用户名"
+              />
+            </div>
+
+            <div class="register-form-group">
+              <label class="register-form-label">密码</label>
+              <input
+                v-model="registerForm.password"
+                type="password"
+                class="register-form-input"
+                placeholder="请输入密码"
+              />
+            </div>
+
+            <div class="register-form-group">
+              <label class="register-form-label">确认密码</label>
+              <input
+                v-model="registerForm.confirmPassword"
+                type="password"
+                class="register-form-input"
+                placeholder="请再次输入密码"
+              />
+            </div>
+
+            <div class="regiter-form-group">
+              <router-link to="/login" class="line-button form-actions-start">
+                返回登录
+              </router-link>
+            </div>
+
+            <button type="submit" class="register-submit-btn" :disabled="loading">
+              {{ loading ? '注册中...' : '继续 >' }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="register-image-section">
+        <img class="register-image" :src="back" alt="Register" />
+      </div>
     </div>
-
-    <div class="form-group">
-      <input
-        v-model="form.email"
-        placeholder="Email"
-        class="form-input"
-        type="email"
-      />
-    </div>
-
-    <div class="form-group">
-      <input
-        v-model="form.password"
-        type="password"
-        placeholder="Password"
-        class="form-input"
-      />
-    </div>
-
-    <div class="form-group">
-      <input
-        v-model="form.confirmPassword"
-        type="password"
-        placeholder="Confirm Password"
-        class="form-input"
-      />
-    </div>
-
-    <button
-      type="submit"
-      :disabled="loading"
-      class="submit-btn"
-      :class="{ 'loading': loading }"
-    >
-      {{ loading ? '注册中...' : '注册' }}
-    </button>
-
-    <div v-if="error" class="error-message">
-      {{ error }}
-    </div>
-  </form>
+  </div>
 </template>
 
-
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useMessage } from 'naive-ui'
 import { registerAPI } from '@/apis/user'
+import Navi from '../components/NaviRegisterView.vue'
+import back from '../../assets/images/rightBack.png'
 
-export default {
-  data() {
-    return {
-      form: {
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      },
-      error: '',
-      loading: false,
-      errorMessage: ''
+const router = useRouter()
+const message = useMessage()
+
+const registerForm = ref({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+
+const loading = ref(false)
+
+const validateForm = () => {
+  const errors = []
+
+  if (!registerForm.value.username) {
+    errors.push('用户名不能为空')
+  } else if (registerForm.value.username.length < 3 || registerForm.value.username.length > 50) {
+    errors.push('用户名长度必须在3到50个字符之间')
+  }
+
+  if (!registerForm.value.email) {
+    errors.push('邮箱不能为空')
+  } else if (!/\S+@\S+\.\S+/.test(registerForm.value.email)) {
+    errors.push('邮箱格式不正确')
+  }
+
+  if (!registerForm.value.password) {
+    errors.push('密码不能为空')
+  } else if (registerForm.value.password.length < 6 || registerForm.value.password.length > 20) {
+    errors.push('密码长度必须在6到20个字符之间')
+  }
+
+  if (!registerForm.value.confirmPassword) {
+    errors.push('请确认密码')
+  } else if (registerForm.value.password !== registerForm.value.confirmPassword) {
+    errors.push('两次输入的密码不一致')
+  }
+
+  return errors
+}
+
+const handleRegister = async () => {
+  loading.value = true
+  try {
+    const errors = validateForm()
+    if (errors.length > 0) {
+      message.error(errors[0])
+      return
     }
-  },
-  methods: {
-    async handleSubmit() {
-      this.loading = true
-      this.errorMessage = ''
-      try {
-        console.log('发送请求:', this.form)  // 确认数据格式
-        const response = await registerAPI(this.form)
-        console.log('注册成功:', response)
-        this.$router.push('/login')
-      } catch (err) {
-          this.errorMessage ='注册失败'
-        this.error = err.response?.data?.message || '请求失败，请检查控制台'
-      } finally {
-        this.loading = false
+
+    const response = await registerAPI(registerForm.value)
+    if (response.code === 200) {
+      message.success('注册成功！即将跳转至登录页')
+      setTimeout(() => {
+        router.push('/login')
+      }, 1500)
+    } else {
+      console.log(response.msg)
+      message.error(response.msg || '注册失败，请检查信息')
+    }
+  } catch (error) {
+    if (error.response) {
+      if (error.response.status === 405) {
+        message.error(error.response.data.msg || '注册失败，请检查信息')
+      } else {
+        message.error('服务器错误，请稍后重试')
       }
-    },
-  },
+    } else if (error.request) {
+      message.error('网络错误，请检查连接')
+    } else {
+      message.error('发生未知错误')
+    }
+
+    console.error('注册出错:', error)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <style scoped>
-.auth-form {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-title {
-  text-align: center;
-  color: #333;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.2rem;
-}
-
-.form-input {
+.register-container {
+  position: relative;
   width: 100%;
-  padding: 0.8rem;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo-img {
+  height: 25px;
+  width: 27px;
+  object-fit: cover;
+}
+
+.logo-text {
+  color: var(--black-1);
+  font-family: 'STZhongsong-Regular', Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.register-content {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.register-form-section {
+  width: 55%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fffef8;
+}
+
+.register-form-container {
+  width: 427px;
+  padding: 40px;
+}
+
+.register-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.register-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.register-form-input {
+  padding: 12px 16px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 14px;
   transition: border-color 0.3s;
 }
 
-.form-input:focus {
+.register-form-input:focus {
   outline: none;
-  border-color: #4a90e2;
+  border-color: #03a6ba;
 }
 
-.submit-btn {
-  width: 100%;
-  padding: 0.8rem;
-  background-color: #4a90e2;
+.register-submit-btn {
+  padding: 12px;
+  background-color: #34565a;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 16px;
 }
 
-.submit-btn:hover:not(:disabled) {
-  background-color: #3a7bc8;
+.register-submit-btn:hover {
+  background-color: #03a6ba;
 }
 
-.submit-btn:disabled {
+.register-submit-btn:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.submit-btn.loading {
-  position: relative;
+.register-image-section {
+  width: 45%;
+  height: 100%;
 }
 
-.error-message {
-  margin-top: 1rem;
-  padding: 0.8rem;
-  background-color: #ffebee;
-  color: #d32f2f;
-  border-radius: 4px;
-  text-align: center;
+.register-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.line-button:hover {
+  color: #03a6ba;
+  text-decoration: underline;
+}
+
+.line-button {
+  color: #666;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+@media (max-width: 768px) {
+  .register-content {
+    flex-direction: column;
+  }
+
+  .register-form-section,
+  .register-image-section {
+    width: 100%;
+    height: auto;
+  }
+
+  .register-form-container {
+    width: 100%;
+    padding: 20px;
+  }
 }
 </style>

@@ -1,43 +1,47 @@
 package com.example.qihuangserver.controller;
 
+import com.example.qihuangserver.model.Classic;
 import com.example.qihuangserver.model.Collected;
+import com.example.qihuangserver.model.User;
+import com.example.qihuangserver.service.ClassicService;
 import com.example.qihuangserver.service.CollectedService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.example.qihuangserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/collected")
 public class CollectedController {
+    private final CollectedService collectedService;
+    private final UserService userService;
+    private final ClassicService classicService;
 
-    @Autowired
-    private CollectedService collectedService;
-
-    @GetMapping
-    public List<Collected> getAllCollected() {
-        return collectedService.findAll();
+    public CollectedController(CollectedService collectedService, UserService userService, ClassicService classicService) {
+        this.collectedService = collectedService;
+        this.userService = userService;
+        this.classicService = classicService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Collected> getCollectedById(@PathVariable Long id) {
-        return collectedService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/status")
+    public boolean isCollected(@RequestParam Long userId, @RequestParam Long classicId) {
+        User user = userService.getUserById(userId);
+        Classic classic = classicService.getClassicById(classicId);
+        return collectedService.isCollected(user, classic);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCollected(@PathVariable Long id) {
-        collectedService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/toggle")
+    public void toggleCollected(@RequestParam Long userId, @RequestParam Long classicId, @RequestParam String title) {
+        collectedService.toggleCollected(userId, classicId, title);
     }
 
-
-    @PostMapping
-    public void collect(@RequestBody Map<String, Long> payload) {
-        Long classicId = payload.get("classicId");
-        collectedService.collect(classicId);
+    @GetMapping("/list")
+    public List<Collected> getUserCollections(@RequestParam Long userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在！");
+        }
+        return collectedService.getUserCollections(user);
     }
+
 }

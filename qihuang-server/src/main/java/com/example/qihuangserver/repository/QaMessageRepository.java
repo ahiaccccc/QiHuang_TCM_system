@@ -15,4 +15,5 @@ import java.util.List;
 public interface QaMessageRepository extends JpaRepository<QaMessage, Long> {
     List<QaMessage> findBySessionIdOrderByCreatedAt(Long sessionId);
     List<QaMessage> findByParent(QaMessage parent);
+    List<QaMessage> findBySession_Id(Long sessionId);
 }
