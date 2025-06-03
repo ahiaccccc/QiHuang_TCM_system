@@ -11,8 +11,10 @@
       <div class="middle-column">
         <div
           class="nav-item"
-          :class="{ active: currentRoute === 'ai-qa' }"
-          @click="navigateTo('ai-qa')"
+
+          :class="{ active: currentRoute === 'ChatTest' }"
+          @click="navigateTo('ChatTest')"
+
         >
           AI问答
         </div>
@@ -30,6 +32,7 @@
         >
           答题挑战
         </div>
+
       </div>
 
       <!-- <div class="right-column">
@@ -44,7 +47,9 @@
           </div>
         </div>
       </div>-->
-    </div> 
+
+    </div>
+
 
     <div class="header-background">
       <img :src="back" alt="背景图" class="background-image" />
@@ -80,6 +85,12 @@ const navigateTo = (route) => {
     case 'classics':
       router.push('/classics')
       break
+
+    case 'ChatTest':
+      router.push('/ChatTest')
+      break
+      
+
   }
 }
 

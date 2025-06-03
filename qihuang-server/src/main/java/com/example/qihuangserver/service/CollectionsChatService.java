@@ -7,6 +7,7 @@ import com.example.qihuangserver.model.CollectionsChat;
 import com.example.qihuangserver.model.User;
 import com.example.qihuangserver.repository.CollectionsChatRepository;
 import com.example.qihuangserver.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
