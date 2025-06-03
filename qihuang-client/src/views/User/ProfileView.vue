@@ -41,7 +41,7 @@
           <div class="action-buttons">
             <template v-if="!isEditing">
               <button class="edit-btn" @click="startEditing">编辑资料</button>
-              <button class="reset-btn" @click="resetPassword">重置密码</button>
+              <button class="reset-btn" @click="resetPassword">修改密码</button>
             </template>
             <template v-else>
               <button class="edit-btn" @click="handleSubmit">保存</button>
@@ -186,7 +186,7 @@ const handleAvatarUpload = async (e) => {
 }
 
 const resetPassword = () => {
-  router.push('/forgetPassword')
+  router.push('/changePassword')
 }
 
 onMounted(async () => {
@@ -230,21 +230,24 @@ onMounted(async () => {
 .home-container {
   position: relative;
   min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e6f2f2;
+}
+
+.home-content {
+  width: 100%;
+  flex: 1;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.home-content {
-  width: 100%;
-  background-color: #e6f2f2;
-  padding: 20px;
-  border-top: none;
-  align-items: center;
-  gap: 20%;
-}
-
 .page-title {
+  align-self: flex-start;
   text-align: left;
   margin-bottom: 20px;
   margin-left: 10%;

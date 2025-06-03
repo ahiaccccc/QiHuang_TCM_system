@@ -165,7 +165,6 @@ const handleLogin = async () => {
   font-size: 1rem;
   font-weight: 500;
   color: #444;
-
 }
 
 .form-input {
@@ -193,9 +192,6 @@ const handleLogin = async () => {
   text-decoration: underline;
 }
 
-=======
-}
-
 .form-input {
   padding: 0.8rem 1rem;
   border: 1px solid #ddd;
@@ -220,7 +216,6 @@ const handleLogin = async () => {
   color: #03a6ba;
   text-decoration: underline;
 }
-
 
 .line-button {
   color: #666;

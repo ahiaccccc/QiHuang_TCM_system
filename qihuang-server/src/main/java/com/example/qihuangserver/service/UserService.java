@@ -1,9 +1,6 @@
 package com.example.qihuangserver.service;
 
-import com.example.qihuangserver.dto.user.LoginRequest;
-import com.example.qihuangserver.dto.user.RegisterRequest;
-import com.example.qihuangserver.dto.user.ResetPasswordRequest;
-import com.example.qihuangserver.dto.user.UpdateProfileRequest;
+import com.example.qihuangserver.dto.user.*;
 import com.example.qihuangserver.exception.UserNotFoundException;
 import com.example.qihuangserver.model.User;
 import com.example.qihuangserver.repository.UserRepository;
@@ -223,4 +220,29 @@ public class UserService {
             return Result.error("头像上传失败: " + ex.getMessage());
         }
     }
+
+    @Transactional
+    public Result changePassword(String token, ChangePasswordRequest request) {
+        try {
+            long userId = JWTUtils.getUserIdFromJwtToken(token);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("用户不存在"));
+
+            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                return Result.error(ResultCode.ELSE_FAILED.getCode(), "两次输入的新密码不一致");
+            }
+
+            if (!request.getOldPassword().equals(user.getPassword())) {
+                return Result.error(ResultCode.ELSE_FAILED.getCode(), "旧密码错误");
+            }
+
+            user.setPassword(request.getNewPassword());
+            userRepository.save(user);
+
+            return Result.success("密码修改成功");
+        } catch (Exception e) {
+            return Result.error(ResultCode.UNAUTHORIZED.getCode(), "无效Token");
+        }
+    }
+
 }
