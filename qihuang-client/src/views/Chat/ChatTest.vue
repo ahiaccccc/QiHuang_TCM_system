@@ -263,11 +263,14 @@ import likedIcon from '@/assets/images/收藏.png';
 import unlikedIcon from '@/assets/images/点赞.png';
 import cntcmIcon from '@/assets/images/中国中医药网.jpg';
 import WTOIcon from '@/assets/images/世界卫生组织.jpg';
-
+import Header from '@/views/components/NaviHomeView.vue'; // 导入Header组件
+import { getToken } from '@/utils/auth'; // 导入获取token的工具函数
+import httpInstance from '@/utils/http'  // 假设你的文件路径是 @/utils/http.js
 
 
 export default {
   components: {
+    Header,
     ChatWebSocket
   },
   data() {
@@ -354,12 +357,20 @@ export default {
     isSpeaking: false, // 是否正在朗读
     speechSynthesis: window.speechSynthesis || null, // 语音合成API
     currentSpeakingIndex: null, // 当前正在朗读的消息索引
+    userAvatar: '',
+    userNickname: '',
+    userInfo: {
+        userId: '',
+        username: '',
+        avatar: ''
+      },
 
 
 
     };
   },
   mounted() {
+    this.fetchUserProfile();
     this.loadConversations();
     this.initializeExpandedThinking();
 
@@ -370,6 +381,37 @@ export default {
     this.closeEventSource();
   },
   methods: {
+  // 在fetchUserProfile方法中确保正确存储用户信息
+async fetchUserProfile() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.$router.push('/login');
+      return;
+    }
+
+    const response = await axios.get('http://localhost:8080/api/user/profile', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.data?.data) {
+      // 更新store和localStorage
+      this.$store.commit('setUser', {
+        userId: response.data.data.userId,
+        token: token,
+        username: response.data.data.username
+      });
+      localStorage.setItem('userId', response.data.data.userId);
+    }
+  } catch (error) {
+    if (error.response?.status === 401) {
+      this.$router.push('/login');
+    }
+  }
+},
+
+
+
 
 
     cancelFileUpload() {
@@ -453,7 +495,10 @@ export default {
         to: this.getBaiduLanguageCode(this.defaultTargetLanguage),
         preserve_markdown: true // 告诉后端保留Markdown格式
       },
-      timeout: 10000
+      timeout: 10000,
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
 
     if (response.data?.trans_result?.length > 0) {
@@ -564,8 +609,20 @@ getLanguageName(langCode) {
 
   async loadCollections() {
     try {
+      const userId =localStorage.getItem('userId');
+      console.log("用户ID:", userId);
+
+
+
+    if (!userId) {
+      console.error("未获取到用户ID");
+      return;
+    }
       const res = await axios.get("http://localhost:8080/api/collections", {
-        params: { userId: 100000005 }
+        params: { userId: userId },
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
       });
 
       console.log("API返回数据:", res.data);
@@ -614,6 +671,12 @@ getLanguageName(langCode) {
 
   // 修改deleteCollection方法使用filteredCollections
   async deleteCollection(collectionId) {
+    const userId =localStorage.getItem('userId');
+
+    if (!userId) {
+      console.error("未获取到用户ID");
+      return;
+    }
     try {
       if (!collectionId) {
         this.$message.error("无效的收藏ID");
@@ -624,7 +687,10 @@ getLanguageName(langCode) {
       if (!confirmDelete) return;
 
       const response = await axios.delete(`http://localhost:8080/api/collections/${collectionId}`, {
-        params: { userId: 100000005 }
+        params: { userId: userId },
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
       });
 
       if (response.data.success) {
@@ -650,9 +716,17 @@ getLanguageName(langCode) {
 
   async addToCollections(content) {
   try {
+    const userId = localStorage.getItem('userId');
+    console.log("用户ID:", userId);
+
+    if (!userId) {
+      console.error("未获取到用户ID");
+      return;
+    }
 
     const confirmAdd = confirm("确定要收藏此条消息吗？");
     if (!confirmAdd) return;
+
     // 提取实际回答内容（去掉思考过程）
     const answerContent = this.extractResponseContent(content);
 
@@ -661,21 +735,20 @@ getLanguageName(langCode) {
       { content: answerContent }, // 请求体
       {
         params: {
-          userId: 100000005 // 查询参数
+          userId: userId // 查询参数
+        },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       }
     );
+
     alert("收藏成功！");
-
-
-      this.$message.success("收藏成功");
-      this.loadCollections();
-
-
+    this.$message.success("收藏成功");
+    this.loadCollections();
   } catch (error) {
-
-
-
+    console.error("收藏失败:", error);
+    this.$message.error("收藏失败: " + (error.response?.data?.message || error.message));
   }
 },
 
@@ -856,10 +929,24 @@ hasThinkingContent(content) {
     },
 
 
+
     async loadConversations() {
   try {
+    const userId = localStorage.getItem('userId');
+    console.log("当前用户ID:", userId);
+
+    if (!userId) {
+      console.error("未获取到用户ID");
+      this.$message.error("请先登录");
+      this.$router.push('/login');
+      return;
+    }
+
     const res = await axios.get("http://localhost:8080/api/chat/conversations", {
-      params: { userId: 100000005 },
+      params: { userId: userId },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
     this.conversations = res.data.filter(conv => conv.id);
 
@@ -868,22 +955,49 @@ hasThinkingContent(content) {
     if (this.currentConversation && !this.conversations.some(c => c.id === this.currentConversation.id)) {
       this.conversations.unshift(this.currentConversation);
     }
+
+
   } catch (error) {
     console.error("加载会话失败", error);
+
+    if (error.response?.status === 401) {
+      this.$message.error("登录已过期，请重新登录");
+      this.$router.push('/login');
+    } else {
+      this.$message.error("加载会话失败: " + (error.response?.data?.message || error.message));
+    }
+    this.conversations = [];
   }
 },
 
 
-    async loadConversation(convId) {
+
+
+async loadConversation(convId) {
       try {
+        const userId = localStorage.getItem('userId');
+    console.log("当前用户ID:", userId);
+
+    if (!userId) {
+      console.error("未获取到用户ID");
+      this.$message.error("请先登录");
+      this.$router.push('/login');
+      return;
+    }
         this.resetViewState();
         const conv = this.conversations.find(c => c.id === convId);
         if (!conv) return;
 
+        console.log("加载会话消息:", convId);
+
 
         this.currentConversation = conv;
         this.isNewConversation = false; // 加载已有会话时设置为false
-        const res = await axios.get(`http://localhost:8080/api/chat/conversations/${convId}`);
+        const res = await axios.get(`http://localhost:8080/api/chat/conversations/${convId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
         this.messages = res.data.map(msg => ({
           role: msg.role,
           content: msg.content,
@@ -897,7 +1011,6 @@ hasThinkingContent(content) {
         console.error("加载会话消息失败", error);
       }
     },
-
 
 
 
@@ -950,6 +1063,7 @@ async startNewConversation() {
 async sendMessage() {
   if (!this.userInput.trim() && !this.selectedFile) return;
 
+
   this.isGenerating = true;
   this.isNewConversation = false;
   const userMsg = {
@@ -969,6 +1083,7 @@ async sendMessage() {
 
     // 创建FormData对象来处理文件上传
     const formData = new FormData();
+    formData.append('userId', localStorage.getItem('userId'));
     formData.append('messages', JSON.stringify(messagesToSend));
     formData.append('newConversation', this.forceNew || !this.currentConversation);
     if (this.currentConversation?.id) {
@@ -985,7 +1100,10 @@ async sendMessage() {
     const response = await fetch('http://localhost:8080/api/chat/stream', {
       method: 'POST',
       body: formData,
-      signal: this.abortController.signal
+      signal: this.abortController.signal,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -1080,7 +1198,10 @@ async startStreamingResponse(requestData, signal) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestData),
-      signal
+      signal,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -1192,6 +1313,7 @@ async regenerateResponse(index) {
 
     // 创建FormData对象，与发送消息时保持一致
     const formData = new FormData();
+    formData.append('userId', localStorage.getItem('userId'));
     formData.append('messages', JSON.stringify(messagesToSend));
     formData.append('newConversation', false);
     formData.append('conversationId', this.currentConversation.id);
@@ -1200,7 +1322,12 @@ async regenerateResponse(index) {
     const response = await fetch('http://localhost:8080/api/chat/stream', {
       method: 'POST',
       body: formData, // 使用FormData而不是JSON
-      signal: this.abortController.signal
+      signal: this.abortController.signal ,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+
+
       // 不要手动设置Content-Type，浏览器会自动处理
     });
 
@@ -1375,7 +1502,11 @@ finalizeStreamingResponse(rawContent) {
       try {
         const response = await axios.put(
           `http://localhost:8080/api/chat/conversations/${convId}/rename`,
-          { title: newTitle }
+          { title: newTitle,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+           }
         );
 
 
@@ -1422,7 +1553,9 @@ finalizeStreamingResponse(rawContent) {
       if (!confirmDelete) return; // 用户点击取消
 
 
-      axios.delete(`http://localhost:8080/api/chat/conversations/${convId}`)
+      axios.delete(`http://localhost:8080/api/chat/conversations/${convId}`,{ headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }})
         .then((response) => {
           // 你可以根据 API 的返回结构来决定如何处理响应
           if (response && response.status === 200) {
@@ -2312,8 +2445,8 @@ finalizeStreamingResponse(rawContent) {
 }
 
 .edit-textarea {
-  width: 100%;
-  min-height: 80px;
+  width: 80px;
+  min-height: 50px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;

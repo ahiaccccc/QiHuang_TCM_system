@@ -94,6 +94,7 @@ const handleLogin = async () => {
     if (response.code === 200) {
       console.log('登录成功:', response.data)
       setToken(response.data.token)
+
       router.push('/profile')
     } else {
       message.error(response.msg || '登录失败')
@@ -184,6 +185,31 @@ const handleLogin = async () => {
   font-size: 1rem;
   font-weight: 500;
   color: #444;
+}
+
+.form-input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #03a6ba;
+}
+
+.form-actions-container {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.line-button:hover {
+  color: #03a6ba;
+  text-decoration: underline;
 }
 
 .form-input {

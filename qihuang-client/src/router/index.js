@@ -29,7 +29,11 @@ const router = createRouter({
       name: 'Profile',
       component: () => import('../views/User/ProfileView.vue'),
     },
-
+    {
+      path: '/changePassword',
+      name: 'ChangePassword',
+      component: () => import('../views/User/ChangePasswordView.vue'),
+    },
 
     {
       path: '/test',
@@ -55,23 +59,16 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Chat/ChatTest.vue'),
     },
+
     {
-      path: '/ChatView',
-      name: 'ChatView',
+      path: '/ChatAdmin',
+      name: 'ChatAdmin',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Chat/ChatView.vue'),
+      component: () => import('../views/Chat/ChatAdmin.vue'),
     },
     {
-      path: '/ConversationDetail',
-      name: 'ConversationDetail',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Chat/ConversationDetail.vue'),
-    },
-{
       path: '/admin-classics',
       name: 'admin-classics',
       // route level code-splitting
@@ -79,31 +76,73 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Classic/AdminClassic.vue'),
     },
-      {
-    path: '/books',
-    name: 'Books',
-    component: () => import('@/views/Classic/BooksView.vue'),
-    props: route => ({
-      bookId: route.query.bookId // 将书籍ID作为prop传递
-    })
-  },
-  {
-    path: '/books/:bookId/classics',
-    name: 'Classics',
-    component: () => import('@/views/Classic/ClassicsView.vue'),
-    props: route => ({
-      bookId: route.params.bookId // 将书籍ID作为prop传递
-    })
-  },
-  {
-    path: '/books/:bookId/classics/:classicId',
-    name: 'ClassicDetail',
-    component: () => import('@/views/Classic/ClassicDetail.vue'),
-          props: route => ({
+    {
+      path: '/books',
+      name: 'Books',
+      component: () => import('@/views/Classic/BooksView.vue'),
+      props: (route) => ({
+        bookId: route.query.bookId, // 将书籍ID作为prop传递
+      }),
+    },
+    {
+      path: '/books/:bookId/classics',
+      name: 'Classics',
+      component: () => import('@/views/Classic/ClassicsView.vue'),
+      props: (route) => ({
+        bookId: route.params.bookId, // 将书籍ID作为prop传递
+      }),
+    },
+    {
+      path: '/books/:bookId/classics/:classicId',
+      name: 'ClassicDetail',
+      component: () => import('@/views/Classic/ClassicDetail.vue'),
+      props: (route) => ({
         bookId: route.params.bookId, // 添加bookId参数
-        classicId: route.params.classicId // 明确命名
-      })
-  },
+        classicId: route.params.classicId, // 明确命名
+      }),
+    },
+    {
+      path: '/admin-QA',
+      name: 'admin-QA',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/AdminQA.vue'),
+    },
+
+    {
+      path: '/admin-classics',
+      name: 'admin-classics',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/AdminClassic.vue'),
+    },
+    {
+      path: '/books',
+      name: 'Books',
+      component: () => import('@/views/Classic/BooksView.vue'),
+      props: (route) => ({
+        bookId: route.query.bookId, // 将书籍ID作为prop传递
+      }),
+    },
+    {
+      path: '/books/:bookId/classics',
+      name: 'Classics',
+      component: () => import('@/views/Classic/ClassicsView.vue'),
+      props: (route) => ({
+        bookId: route.params.bookId, // 将书籍ID作为prop传递
+      }),
+    },
+    {
+      path: '/books/:bookId/classics/:classicId',
+      name: 'ClassicDetail',
+      component: () => import('@/views/Classic/ClassicDetail.vue'),
+      props: (route) => ({
+        bookId: route.params.bookId, // 添加bookId参数
+        classicId: route.params.classicId, // 明确命名
+      }),
+    },
     {
       path: '/admin-QA',
       name: 'admin-QA',
@@ -117,12 +156,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !localStorage.getItem('token')) {
-    next('/login');
+    next('/login')
   } else {
-    next();
+    next()
   }
-});
-
-
+})
 
 export default router

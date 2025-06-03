@@ -11,8 +11,8 @@
       <div class="middle-column">
         <div
           class="nav-item"
-          :class="{ active: currentRoute === 'ai-qa' }"
-          @click="navigateTo('ai-qa')"
+          :class="{ active: currentRoute === 'ChatTest' }"
+          @click="navigateTo('ChatTest')"
         >
           AI问答
         </div>
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <!-- <div class="right-column">
+      <div class="right-column">
         <div class="user-profile">
           <div class="avatar">
             <img class="avatar-img" :src="avatar" alt="用户头像" />
@@ -43,8 +43,8 @@
             <div class="dropdown-item" @click.stop="logout">退出</div>
           </div>
         </div>
-      </div>-->
-    </div> 
+      </div>
+    </div>
 
     <div class="header-background">
       <img :src="back" alt="背景图" class="background-image" />
@@ -57,7 +57,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import logo from '../../assets/images/logo.png'
 import back from '../../assets/images/back.png'
-// import { removeToken } from '@/utils/auth'
+import { removeToken } from '@/utils/auth'
 
 defineProps({
   avatar: {
@@ -80,24 +80,28 @@ const navigateTo = (route) => {
     case 'classics':
       router.push('/classics')
       break
+
+    case 'ChatTest':
+      router.push('/ChatTest')
+      break
   }
 }
 
-// const goToProfile = () => {
-//   router.push('/profile')
-//   showDropdown.value = false
-// }
+const goToProfile = () => {
+  router.push('/profile')
+  showDropdown.value = false
+}
 
 const goToHome = () => {
   router.push('/')
   showDropdown.value = false
 }
 
-// const logout = () => {
-//   removeToken()
-//   router.push('/login')
-//   showDropdown.value = false
-// }
+const logout = () => {
+  removeToken()
+  router.push('/login')
+  showDropdown.value = false
+}
 </script>
 
 <style scoped>

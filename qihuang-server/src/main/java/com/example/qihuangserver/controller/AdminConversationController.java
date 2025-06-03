@@ -6,6 +6,7 @@ import com.example.qihuangserver.dto.zhongyizhishiwenda.MessageDTO;
 import com.example.qihuangserver.model.Conversation;
 import com.example.qihuangserver.model.Message;
 import com.example.qihuangserver.service.AdminConversationService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class AdminConversationController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllConversations() {
+    public ResponseEntity<?> getAllConversations(HttpServletRequest request) {
         try {
             List<Conversation> conversations = adminConversationService.getAllConversations();
             List<ConversationDTO> dtos = conversations.stream().map(conv -> {
@@ -49,12 +50,12 @@ public class AdminConversationController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Conversation> getConversationsByUserId(@PathVariable Long userId) {
+    public List<Conversation> getConversationsByUserId(@PathVariable Long userId,HttpServletRequest request) {
         return adminConversationService.getConversationsByUserId(userId);
     }
 
     @GetMapping("/{convId}/messages")
-    public ResponseEntity<List<MessageDTO>> getMessagesByConversationId(@PathVariable Long convId) {
+    public ResponseEntity<List<MessageDTO>> getMessagesByConversationId(@PathVariable Long convId,HttpServletRequest request) {
         List<Message> messages = adminConversationService.getMessagesByConversationId(convId);
 
         List<MessageDTO> dtos = messages.stream().map(msg -> {
@@ -78,7 +79,7 @@ public class AdminConversationController {
     public ResponseEntity<List<Map<String, Object>>> searchConversations(
             @RequestParam(required = false) Long convId,
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) Long userId) {
+            @RequestParam(required = false) Long userId,HttpServletRequest request) {
 
         List<Conversation> conversations = adminConversationService.searchConversations(convId, title, userId);
 

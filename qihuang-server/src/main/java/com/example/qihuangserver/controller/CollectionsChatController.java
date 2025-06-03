@@ -2,10 +2,16 @@ package com.example.qihuangserver.controller;
 
 import com.example.qihuangserver.dto.ApiResponse;
 import com.example.qihuangserver.dto.zhongyizhishiwenda.CollectionsChatRequest;
+import com.example.qihuangserver.repository.UserRepository;
 import com.example.qihuangserver.service.CollectionsChatService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/collections")
@@ -13,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class CollectionsChatController {
 
     private final CollectionsChatService collectionsChatService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     public CollectionsChatController(CollectionsChatService collectionsChatService) {
@@ -21,16 +29,22 @@ public class CollectionsChatController {
 
 
     @PostMapping
-    public ApiResponse addCollection(@RequestParam Long userId,
-                                     @RequestBody @Valid CollectionsChatRequest request) {
+    public ApiResponse addCollection(@RequestBody CollectionsChatRequest request,
+                                     @RequestParam Long userId,
+                                     HttpServletRequest httpRequest) {
+        // 验证token
+        String token = httpRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return new ApiResponse(false, "未授权的访问", null);
+        }
+
         return collectionsChatService.addCollection(userId, request);
     }
-
 
     @CrossOrigin(origins = "http://localhost:4000")
     @GetMapping("/{collectionId}")
     public ApiResponse getCollectionById(@RequestParam Long userId,
-                                         @PathVariable Long collectionId) {
+                                         @PathVariable Long collectionId,HttpServletRequest request) {
         return collectionsChatService.getCollectionById(userId, collectionId);
     }
 
@@ -56,7 +70,17 @@ public class CollectionsChatController {
 
     @CrossOrigin(origins = "http://localhost:4000")
     @GetMapping
-    public ApiResponse getUserCollections(@RequestParam Long userId) {
+    public ApiResponse getUserCollections(@RequestParam Long userId, HttpServletRequest request) {
+        if (userId == null) {
+            return new ApiResponse(false, "用户ID不能为空", null);
+        }
+
+        // 验证用户是否存在
+        if (!userRepository.existsById(userId)) {
+            return new ApiResponse(false, "用户不存在", null);
+        }
+
         return collectionsChatService.getUserCollections(userId);
+
     }
 }
