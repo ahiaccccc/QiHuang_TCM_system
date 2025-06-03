@@ -13,6 +13,7 @@ const httpInstance = axios.create({
 httpInstance.interceptors.request.use(config => {
   // 从本地存储获取token
   const token = getToken()
+  console.log('Token:', token) // 打印token以便调试
   if (token) {
     config.headers.Authorization = `Bearer ${token}` // Bearer方案
   }
@@ -21,17 +22,17 @@ httpInstance.interceptors.request.use(config => {
   return Promise.reject(error)
 })
 
-httpInstance.interceptors.response.use(
-  res => res.data,
-  e => {
-    if (e.response?.status === 401) {
-      // 处理 401 错误
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(e)
-  }
-)
+// httpInstance.interceptors.response.use(
+//   res => res.data,
+//   e => {
+//     if (e.response?.status === 401) {
+//       // 处理 401 错误
+//       localStorage.removeItem('token')
+//       window.location.href = '/login'
+//     }
+//     return Promise.reject(e)
+//   }
+// )
 
 // 导出 httpInstance
 export default httpInstance

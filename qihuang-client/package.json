@@ -17,6 +17,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "element-plus": "^2.9.11",
+    "marked": "^15.0.12",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
     "sass": "^1.86.3",

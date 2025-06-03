@@ -1,5 +1,7 @@
 // 存储Token
 export const setToken = (token) => {
+
+  console.log('Setting token:', token) // 打印token以便调试
   localStorage.setItem('token', token)
 }
 
