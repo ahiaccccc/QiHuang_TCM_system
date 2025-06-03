@@ -74,7 +74,6 @@ const handleLogin = async () => {
     const response = await loginAPI(loginForm.value)
     if (response.code === 200) {
       setToken(response.data.token)
-      router.push('/ChatTest')
 
       router.push('/profile')
     } else {
@@ -166,6 +165,7 @@ const handleLogin = async () => {
   font-size: 1rem;
   font-weight: 500;
   color: #444;
+
 }
 
 .form-input {
@@ -192,6 +192,35 @@ const handleLogin = async () => {
   color: #03a6ba;
   text-decoration: underline;
 }
+
+=======
+}
+
+.form-input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #03a6ba;
+}
+
+.form-actions-container {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.line-button:hover {
+  color: #03a6ba;
+  text-decoration: underline;
+}
+
 
 .line-button {
   color: #666;
