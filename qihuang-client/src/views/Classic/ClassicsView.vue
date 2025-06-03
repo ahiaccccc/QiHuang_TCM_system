@@ -1,145 +1,244 @@
 <template>
-  <div id="app" class="classics">
-    <div class="header">
-      <h2>中医典籍</h2>
-      <div class="tabs">
-        <button v-for="tab in tabs" :key="tab" @click="selectedTab = tab" :class="{ active: selectedTab === tab }">
-          {{ tab }}
-        </button>
-        <input v-model="searchQuery" placeholder="搜索标题或作者" class="search-input" />
-        <button class="admin-btn" @click="showAdmin = !showAdmin">后台管理</button>
-      </div>
-    </div>
+  <div class="classics">
+    <Navi />
+    <div class="hero-section">
+      <div class="main-area">
+        <div class="main-area-header">
+          <div class="frame">
+            <div class="text-wrapper">{{ book.name }}</div>
+          </div>
 
-    <div v-if="showAdmin" class="admin-panel">
-      <h3>后台管理</h3>
-      <form @submit.prevent="saveBook">
-        <input v-model="editBook.title" placeholder="标题" required />
-        <input v-model="editBook.author" placeholder="作者" />
-        <input v-model="editBook.dynasty" placeholder="朝代" />
-        <input v-model="editBook.coverUrl" placeholder="封面URL" />
-        <textarea v-model="editBook.originalText" placeholder="原文"></textarea>
-        <textarea v-model="editBook.vernacularText" placeholder="白话文"></textarea>
-        <textarea v-model="editBook.translateText" placeholder="翻译"></textarea>
-        <select v-model="editBook.category">
-          <option disabled value="">请选择分类</option>
-            <option v-for="tab in tabs.slice(1)" :key="tab" :value="tab">
-              {{ tab }}
-            </option>
-        </select>
-        <textarea v-model="editBook.summary" placeholder="简介"></textarea>
-        <button type="submit">保存</button>
-      </form>
-      <div class="book-admin-list">
-        <div class="book-card" v-for="book in books" :key="book.id">
-          <h4>{{ book.title }}</h4>
-          <button @click="edit(book)">编辑</button>
-          <button @click="del(book.id)">删除</button>
+          <div class="frame-wrapper-right">
+            <button @click="$router.push('/books')" class="text-wrapper-3">返回</button>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="book-list" v-else>
-      <div class="book-card" v-for="book in filteredBooks" :key="book.id">
-        <img :src="book.coverUrl" alt="cover" class="cover" />
-        <div class="info">
-          <h3>{{ book.title }}</h3>
-          <p>{{ book.author }}</p>
-          <p class="summary">{{ book.summary }}</p>
-          <button @click="goToDetail(book.id)">学习</button>
+
+        <div class="div-wrapper">
+          <div class="frame-2">
+             <div v-for="classic in classics" :key="classic.id" 
+       class="classic-item" 
+       @click="goToDetail(classic.id)">
+              <div class="classic-info">
+                <div class="text-wrapper-6">{{ classic.title }}</div>
+                <!-- <div class="text-wrapper-8">{{ classic.summary }}</div> -->
+              </div>
+            </div>
+          </div>
+          <!-- 修改后的分页组件 -->
+          <div class="pagination-list">
+            <div class="pagination-page">
+              <div class="text-wrapper-9" @click="prevPage" :disabled="page === 1">‹</div>
+            </div>
+            <div class="element-wrapper">
+              <div class="element">{{ page }}</div>
+            </div>
+            <div class="text-wrapper-9">/</div>
+            <div class="element-wrapper">
+              <div class="element">{{ classicStore.totalPages }}</div>
+            </div>
+            <div class="pagination-page">
+              <div class="text-wrapper-9" @click="nextPage" :disabled="page === classicStore.totalPages">›</div>
+            </div>
+            <div class="pagination-input">
+              <input type="number" v-model.number="inputPage" min="1" :max="classicStore.totalPages"
+                @keyup.enter="goToPage" placeholder="页码" />
+              <button @click="goToPage">跳转</button>
+            </div>
+          </div>
+
+
         </div>
-      </div>
-    </div>
 
-    <div class="pagination">
-      <button @click="prevPage" :disabled="page === 1">&lt;</button>
-      <span>{{ page }}</span>
-      <button @click="nextPage">&gt;</button>
+
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-import axios from 'axios'
-import { useRouter } from 'vue-router'
+import '@/assets/classic.css'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useClassicStore } from '@/stores/classic'
+import { useBookStore } from '@/stores/book'
+import Navi from '../components/NaviHomeView.vue'
 
 const router = useRouter()
+const route = useRoute()
+const classicStore = useClassicStore()
+const bookStore = useBookStore()
 
-const tabs = ['所有类型', '基础理论', '临床各科', '中药方剂', '针灸推拿']
-const selectedTab = ref('所有类型')
-const books = ref([])
+const book = ref({})
 const page = ref(1)
-const pageSize = 12
-const showAdmin = ref(false)
-const editBook = ref({})
-const searchQuery = ref('')
-const totalPages = ref(1)
+const pageSize = 21
+const bookId = parseInt(route.params.bookId)
+const inputPage = ref(1) // 新增：用于输入跳转的页码
 
-const fetchBooks = async () => {
-  const res = await axios.get(`/api/classics`, {
-    params: {
+const loadData = async () => {
+  try {
+    await bookStore.getBookById(route.params.bookId)
+    await classicStore.loadClassics(route.params.bookId, {
       page: page.value - 1,
-      size: pageSize,
-      category: selectedTab.value === '所有类型' ? null : selectedTab.value,
-      keyword: searchQuery.value || null
+      size: pageSize
+    })
+    // 加载后更新输入框值为当前页
+    inputPage.value = page.value
+  } catch (error) {
+    console.error('加载数据失败:', error)
+  }
+}
+
+onMounted(loadData)
+watch(() => route.params.bookId, loadData)
+
+ const classics = computed(() => classicStore.classics)
+
+
+const goToDetail = (classicId) => {
+  router.push({ 
+    name: 'ClassicDetail', 
+    params: { 
+      bookId: route.params.bookId,  // 传递真实的bookId
+      classicId: classicId
     }
   })
-  books.value = res.data.content
-  totalPages.value = res.data.totalPages
 }
-
-const goToDetail = (bookId) => {
-  router.push({ path: '/classic-detail', query: { book_id: bookId } })
-}
-
-const edit = (book) => {
-  editBook.value = { ...book }
-}
-
-const saveBook = async () => {
-  if (editBook.value.id) {
-    await axios.put(`/api/classics/${editBook.value.id}`, editBook.value)
-  } else {
-    await axios.post(`/api/classics`, editBook.value)
-  }
-  fetchBooks()
-  editBook.value = {}
-}
-
-const del = async (id) => {
-  if (confirm('确认删除？')) {
-    await axios.delete(`/api/classics/${id}`)
-    fetchBooks()
-  }
-}
-
-onMounted(fetchBooks)
-watch([selectedTab, searchQuery, page], fetchBooks)
-
-const filteredBooks = computed(() => books.value)
 
 const nextPage = () => {
-  page.value++
+  if (page.value < classicStore.totalPages) {
+    page.value++
+    inputPage.value = page.value // 同步输入框值
+  }
 }
+
 const prevPage = () => {
-  if (page.value > 1) page.value--
+  if (page.value > 1) {
+    page.value--
+    inputPage.value = page.value // 同步输入框值
+  }
 }
+
+// 新增：跳转到指定页面
+const goToPage = () => {
+  let targetPage = Math.max(1, Math.min(inputPage.value, classicStore.totalPages))
+  page.value = targetPage
+  inputPage.value = targetPage // 修正输入值
+}
+
+const loadBook = async () => {
+  book.value = await bookStore.getBookById(bookId)
+}
+
+const loadClassics = async () => {
+  await classicStore.loadClassics(bookId, {
+    page: page.value - 1,
+    size: pageSize
+  })
+}
+
+onMounted(() => {
+  loadBook()
+  loadClassics()
+})
+
+watch(page, loadClassics)
 </script>
 
 <style scoped>
-.books-page { padding: 2rem; font-family: sans-serif; }
-.header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-.tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-.tabs button { padding: 0.4rem 0.8rem; border: none; background: #eee; border-radius: 0.5rem; }
-.tabs .active { background: #42b983; color: white; }
-.search-input { padding: 0.4rem 0.8rem; border-radius: 0.5rem; border: 1px solid #ccc; }
-.book-list, .book-admin-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
-.book-card { background: white; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
-.cover { width: 100%; height: 180px; object-fit: cover; border-radius: 0.5rem; }
-.summary { font-size: 0.85rem; color: #666; margin: 0.5rem 0; }
-.learn-btn, .admin-btn, form button { background-color: #42b983; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 0.5rem; cursor: pointer; }
-.pagination { margin-top: 1rem; display: flex; justify-content: center; align-items: center; gap: 1rem; }
-.admin-panel form { display: flex; flex-direction: column; gap: 0.5rem; max-width: 600px; margin-top: 1rem; }
-.admin-panel textarea, .admin-panel input, .admin-panel select { padding: 0.4rem; border: 1px solid #ccc; border-radius: 0.5rem; }
+.classic-item {
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e6ed;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  min-width: 25%;
+}
+
+.classic-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #a0b8e0;
+}
+
+.classic-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 6px;
+  background: linear-gradient(to bottom, #4a69bd, #6a89cc);
+  border-radius: 6px 0 0 6px;
+}
+
+.classic-info {
+  flex: 1;
+  padding-left: 15px;
+}
+
+.text-wrapper-6 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.text-wrapper-8 {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #7f8c8d;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.frame-2 {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.pagination-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin:0 auto 20px;
+}
+
+.pagination-input {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.pagination-input input {
+  width: 60px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.pagination-input button {
+  margin-left: 8px;
+  padding: 6px 12px;
+  background-color: #1da1a6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-input button:hover {
+  background-color: #169772;
+}
 </style>

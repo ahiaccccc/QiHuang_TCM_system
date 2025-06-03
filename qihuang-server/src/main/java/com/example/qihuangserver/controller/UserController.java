@@ -1,14 +1,11 @@
 package com.example.qihuangserver.controller;
 
-import com.example.qihuangserver.dto.ApiResponse;
 import com.example.qihuangserver.dto.user.LoginRequest;
 import com.example.qihuangserver.dto.user.RegisterRequest;
 import com.example.qihuangserver.dto.user.ResetPasswordRequest;
 import com.example.qihuangserver.dto.user.UpdateProfileRequest;
-import com.example.qihuangserver.model.User;
-import com.example.qihuangserver.repository.UserRepository;
 import com.example.qihuangserver.service.UserService;
-import com.example.qihuangserver.util.SimpleTokenUtil;
+import com.example.qihuangserver.util.Result;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,65 +19,48 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        User user = userService.registerUser(request);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<Result> register(@RequestBody RegisterRequest request) {
+        Result result = userService.registerUser(request);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest request) {
-        ApiResponse response = userService.login(request);
-        return ResponseEntity.status(response.isSuccess() ? 200 : 401).body(response);
+    public ResponseEntity<Result> login(@Valid @RequestBody LoginRequest request) {
+        Result result = userService.login(request);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PostMapping("/email-reset-password")
-    public ResponseEntity<ApiResponse> emailResetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        ApiResponse response = userService.emailResetPassword(request);
-        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
+    public ResponseEntity<Result> emailResetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        Result result = userService.emailResetPassword(request);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<ApiResponse> getProfile(
+    public ResponseEntity<Result> getProfile(
             @RequestHeader("Authorization") String authHeader) {
-        // 从SimpleTokenUtil验证token
         String token = authHeader.replace("Bearer ", "");
-        long userId = SimpleTokenUtil.validateToken(token);
-
-        if (userId == 0L) { // 假设无效token返回0
-            return ResponseEntity.status(401).body(new ApiResponse(false, "无效Token", null));
-        }
-
-        ApiResponse response = userService.getProfile(userId);
-        return ResponseEntity.ok(response);
+        Result result = userService.getProfile(token);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PostMapping("/update-profile")
-    public ResponseEntity<ApiResponse> updateProfile(
+    public ResponseEntity<Result> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request,
-            @RequestHeader("Authorization") String token) {
-        long userId = SimpleTokenUtil.validateToken(token.replace("Bearer ", ""));
-        if (userId == 0L) {
-            return ResponseEntity.status(401).body(new ApiResponse(false, "无效Token", null));
-        }
-
-        ApiResponse response = userService.updateProfile(userId, request);
-        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Result result = userService.updateProfile(token, request);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PostMapping("/upload-avatar")
-    public ResponseEntity<ApiResponse> uploadAvatar(
+    public ResponseEntity<Result> uploadAvatar(
             @RequestParam("file") MultipartFile file,
-            @RequestHeader("Authorization") String token) {
-        long userId = SimpleTokenUtil.validateToken(token.replace("Bearer ", ""));
-        if (userId == 0L) {
-            return ResponseEntity.status(401).build();
-        }
-
-        ApiResponse response = userService.uploadAvatar(userId, file);
-        return ResponseEntity.ok(response);
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Result result = userService.uploadAvatar(token, file);
+        return ResponseEntity.status(result.getCode()).body(result);
     }
 }

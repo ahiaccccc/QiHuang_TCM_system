@@ -36,22 +36,7 @@ const router = createRouter({
       name: 'testConnection',
       component: () => import('../views/testConnection.vue'),
     },
-    {
-      path: '/classics',
-      name: 'classics',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Classic/ClassicsView.vue'),
-    },
-    {
-      path: '/classic-detail',
-      name: 'classic-detail',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Classic/ClassicDetail.vue'),
-    },
+
     {
       path: '/quiz-select',
       name: 'quiz-select',
@@ -86,7 +71,47 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Chat/ConversationDetail.vue'),
     },
-
+{
+      path: '/admin-classics',
+      name: 'admin-classics',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/AdminClassic.vue'),
+    },
+      {
+    path: '/books',
+    name: 'Books',
+    component: () => import('@/views/Classic/BooksView.vue'),
+    props: route => ({
+      bookId: route.query.bookId // 将书籍ID作为prop传递
+    })
+  },
+  {
+    path: '/books/:bookId/classics',
+    name: 'Classics',
+    component: () => import('@/views/Classic/ClassicsView.vue'),
+    props: route => ({
+      bookId: route.params.bookId // 将书籍ID作为prop传递
+    })
+  },
+  {
+    path: '/books/:bookId/classics/:classicId',
+    name: 'ClassicDetail',
+    component: () => import('@/views/Classic/ClassicDetail.vue'),
+          props: route => ({
+        bookId: route.params.bookId, // 添加bookId参数
+        classicId: route.params.classicId // 明确命名
+      })
+  },
+    {
+      path: '/admin-QA',
+      name: 'admin-QA',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Classic/AdminQA.vue'),
+    },
   ],
 })
 
