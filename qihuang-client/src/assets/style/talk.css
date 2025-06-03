@@ -1,0 +1,770 @@
+.talk {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  height: 1039px;
+  position: relative;
+}
+
+.talk .back {
+  align-self: stretch;
+  height: 975.99px;
+  position: relative;
+  width: 100%;
+}
+
+.talk .hero-section {
+  background-color: var(--danlan);
+  height: 986px;
+  left: 0;
+  position: absolute;
+  top: 53px;
+  width: 1366px;
+}
+
+.talk .frame {
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  height: 991px;
+  left: 1px;
+  padding: 50px 20px;
+  position: absolute;
+  top: 0;
+  width: 348px;
+}
+
+.talk .div {
+  align-items: flex-start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  position: relative;
+}
+
+.talk .frame-2 {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 15px 0px;
+  position: relative;
+}
+
+.talk .vuesax-linear {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .text-wrapper {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 0;
+  color: var(--neutral-gray-600);
+  display: -webkit-box;
+  font-family: var(--paragraph-p2-regular-font-family);
+  font-size: var(--paragraph-p2-regular-font-size);
+  font-style: var(--paragraph-p2-regular-font-style);
+  font-weight: var(--paragraph-p2-regular-font-weight);
+  height: 21px;
+  letter-spacing: var(--paragraph-p2-regular-letter-spacing);
+  line-height: var(--paragraph-p2-regular-line-height);
+  margin-top: -1.00px;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 237px;
+}
+
+.talk .vuesax-linear-2 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-1.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .text-wrapper-2 {
+  color: var(--neutral-gray-600);
+  font-family: var(--paragraph-p2-regular-font-family);
+  font-size: var(--paragraph-p2-regular-font-size);
+  font-style: var(--paragraph-p2-regular-font-style);
+  font-weight: var(--paragraph-p2-regular-font-weight);
+  letter-spacing: var(--paragraph-p2-regular-letter-spacing);
+  line-height: var(--paragraph-p2-regular-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .vuesax-linear-3 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-2.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .frame-3 {
+  align-items: flex-start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: -20.00px;
+  margin-right: -20.00px;
+  position: relative;
+}
+
+.talk .mask-group-wrapper {
+  height: 50px;
+  position: relative;
+  width: 348px;
+}
+
+.talk .mask-group {
+  height: 168px;
+  left: 0;
+  position: absolute;
+  top: -57px;
+  width: 348px;
+}
+
+.talk .frame-4 {
+  align-items: center;
+  display: flex;
+  gap: 54px;
+  justify-content: space-around;
+  left: 28px;
+  padding: 0px 5px;
+  position: absolute;
+  top: 15px;
+  width: 280px;
+}
+
+.talk .frame-5 {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  position: relative;
+  width: 252px;
+}
+
+.talk .vuesax-linear-4 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-3.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .text-wrapper-3 {
+  color: var(--shenlan);
+  font-family: var(--paragraph-p2-regular-font-family);
+  font-size: var(--paragraph-p2-regular-font-size);
+  font-style: var(--paragraph-p2-regular-font-style);
+  font-weight: var(--paragraph-p2-regular-font-weight);
+  letter-spacing: var(--paragraph-p2-regular-letter-spacing);
+  line-height: var(--paragraph-p2-regular-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .group {
+  height: 16px;
+  left: 252px;
+  position: absolute;
+  top: 3px;
+  width: 42px;
+}
+
+.talk .trash {
+  height: 16px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 16px;
+}
+
+.talk .vuesax-linear-edit {
+  height: 16px;
+  left: 26px;
+  position: absolute;
+  top: 0;
+  width: 16px;
+}
+
+.talk .edit-wrapper {
+  height: 16px;
+}
+
+.talk .edit {
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .union {
+  height: 15px;
+  left: 1px;
+  position: absolute;
+  top: 0;
+  width: 15px;
+}
+
+.talk .vector {
+  height: 16px;
+  left: 8777px;
+  position: absolute;
+  top: -1980px;
+  width: 16px;
+}
+
+.talk .frame-6 {
+  align-items: flex-start;
+  display: inline-flex;
+  flex-direction: column;
+  height: 174px;
+  position: relative;
+}
+
+.talk .vuesax-linear-5 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-4.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .vuesax-linear-6 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-5.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .vuesax-linear-7 {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/message-6.png);
+  background-size: 100% 100%;
+  height: 16px;
+  position: relative;
+  width: 16px;
+}
+
+.talk .group-wrapper {
+  background-color: var(--lanlv);
+  border-radius: 69px;
+  height: 50px;
+  position: relative;
+  width: 278px;
+}
+
+.talk .div-wrapper {
+  height: 19px;
+  left: 90px;
+  position: relative;
+  top: 15px;
+  width: 107px;
+}
+
+.talk .text-wrapper-4 {
+  color: #ffffff;
+  font-family: var(--large-font-family);
+  font-size: var(--large-font-size);
+  font-style: var(--large-font-style);
+  font-weight: var(--large-font-weight);
+  left: 0;
+  letter-spacing: var(--large-letter-spacing);
+  line-height: var(--large-line-height);
+  position: absolute;
+  top: 0;
+  width: 105px;
+}
+
+.talk .frame-7 {
+  align-items: flex-start;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 28px;
+  left: 30px;
+  position: absolute;
+  top: 866px;
+}
+
+.talk .logo {
+  align-items: center;
+  display: flex;
+  gap: 5.38px;
+  height: 88px;
+  margin-bottom: -60.00px;
+  position: relative;
+  width: 255px;
+}
+
+.talk .img {
+  height: 50px;
+  object-fit: cover;
+  position: relative;
+  width: 55px;
+}
+
+.talk .text-wrapper-5 {
+  color: var(--black-1);
+  font-family: "STZhongsong-Regular", Helvetica;
+  font-size: 40px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 60px;
+  position: relative;
+  width: 192px;
+}
+
+.talk .frame-8 {
+  height: 980px;
+  left: 354px;
+  position: absolute;
+  top: 6px;
+  width: 1012px;
+}
+
+.talk .frame-9 {
+  height: 57px;
+  left: 29px;
+  position: absolute;
+  top: 31px;
+  width: 909px;
+}
+
+.talk .ellipse {
+  height: 40px;
+  left: 863px;
+  position: absolute;
+  top: 5px;
+  width: 40px;
+}
+
+.talk .frame-10 {
+  background-color: #ffffffd4;
+  border-radius: 30px;
+  height: 50px;
+  left: 718px;
+  position: absolute;
+  top: 0;
+  width: 128px;
+}
+
+.talk .text-wrapper-6 {
+  color: var(--neutral-gray-600);
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  left: 20px;
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  position: absolute;
+  text-align: right;
+  top: 16px;
+  white-space: nowrap;
+}
+
+.talk .xaioxizuo {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  left: 26px;
+  padding: 0px 10px;
+  position: absolute;
+  top: 98px;
+  width: 954px;
+}
+
+.talk .ellipse-2 {
+  height: 40px;
+  position: relative;
+  width: 40px;
+}
+
+.talk .frame-wrapper {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  position: relative;
+  width: 843px;
+}
+
+.talk .frame-11 {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 30px;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  max-width: 750px;
+  padding: 25px 38px;
+  position: relative;
+  width: 100%;
+}
+
+.talk .p {
+  color: var(--neutral-gray-600);
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  width: 674px;
+}
+
+.talk .regenerate-response {
+  align-items: center;
+  border: 1px solid;
+  border-color: #475569;
+  border-radius: 45px;
+  display: flex;
+  gap: 10px;
+  height: 50px;
+  justify-content: center;
+  left: 373px;
+  overflow: hidden;
+  position: absolute;
+  top: 817px;
+  width: 192px;
+}
+
+.talk .vector-2 {
+  height: 14px;
+  position: relative;
+  width: 14px;
+}
+
+.talk .text-wrapper-7 {
+  color: var(--heilan);
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  height: 18px;
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  position: relative;
+  white-space: nowrap;
+  width: 74px;
+}
+
+.talk .type {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0px 8px 24px -4px #00000014;
+  display: flex;
+  gap: 515px;
+  height: 50px;
+  justify-content: space-around;
+  left: 68px;
+  padding: 6px 30px;
+  position: absolute;
+  top: 883px;
+  width: 870px;
+}
+
+.talk .frame-12 {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 8px;
+  position: relative;
+}
+
+.talk .frame-13 {
+  align-items: center;
+  display: flex;
+  gap: 42px;
+  position: relative;
+  width: 110px;
+}
+
+.talk .text-wrapper-8 {
+  color: var(--neutral-gray-500);
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  margin-right: -13.00px;
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .vuesax-linear-send-wrapper {
+  align-items: center;
+  background-color: var(--shenlan);
+  border-radius: 60px;
+  box-shadow: 0px 4px 8px #5661f640;
+  display: flex;
+  gap: 10px;
+  height: 48px;
+  justify-content: center;
+  left: 792px;
+  padding: 10px;
+  position: absolute;
+  top: 1px;
+  width: 48px;
+}
+
+.talk .vuesax-linear-send {
+  height: 24px !important;
+  position: relative !important;
+  width: 24px !important;
+}
+
+.talk .scrollbar-frame {
+  height: 986px;
+  left: 1355px;
+  position: absolute;
+  top: 0;
+  width: 11px;
+}
+
+.talk .scrollbar {
+  background-color: #00000080;
+  border: 1px solid;
+  border-color: #ffffff25;
+  border-radius: 3.5px;
+  height: 979px;
+  left: 1px;
+  position: relative;
+  top: 1px;
+  width: 9px;
+}
+
+.talk .navigation {
+  -webkit-backdrop-filter: blur(26.37px) brightness(100%);
+  align-items: center;
+  backdrop-filter: blur(26.37px) brightness(100%);
+  background-color: var(--transparent);
+  display: flex;
+  justify-content: center;
+  left: 1px;
+  padding: 10.76px 0px;
+  position: absolute;
+  top: 0;
+  width: 1365px;
+}
+
+.talk .nav-container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 16.15px;
+  position: relative;
+  width: 900px;
+}
+
+.talk .left-column {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 32.29px;
+  position: relative;
+}
+
+.talk .logo-2 {
+  align-items: center;
+  display: flex;
+  gap: 5.38px;
+  height: 26px;
+  position: relative;
+  width: 114.64px;
+}
+
+.talk .logo-3 {
+  height: 25px;
+  object-fit: cover;
+  position: relative;
+  width: 27px;
+}
+
+.talk .text-wrapper-9 {
+  color: var(--black-1);
+  font-family: "STZhongsong-Regular", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 30px;
+  margin-bottom: -1.41px;
+  margin-right: -9.74px;
+  margin-top: -2.59px;
+  position: relative;
+  width: 92px;
+}
+
+.talk .nav-links {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 16.15px;
+  min-height: 0.59px;
+  position: relative;
+}
+
+.talk .nav-link {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  position: relative;
+}
+
+.talk .text-wrapper-10 {
+  color: #03a5b9;
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  margin-top: -0.59px;
+  position: relative;
+  width: 47px;
+}
+
+.talk .text-wrapper-11 {
+  color: var(--black-1);
+  font-family: var(--middle-font-family);
+  font-size: var(--middle-font-size);
+  font-style: var(--middle-font-style);
+  font-weight: var(--middle-font-weight);
+  letter-spacing: var(--middle-letter-spacing);
+  line-height: var(--middle-line-height);
+  margin-top: -0.59px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .right-column {
+  align-items: center;
+  display: flex;
+  gap: 5.38px;
+  min-height: 0.59px;
+  position: relative;
+  width: 187px;
+}
+
+.talk .icon-button {
+  align-items: center;
+  background-color: #0812254c;
+  border-radius: 269.12px;
+  display: flex;
+  height: 28.26px;
+  justify-content: center;
+  position: relative;
+  width: 28.26px;
+}
+
+.talk .bell {
+  height: 10.77px;
+  position: relative;
+  width: 10.77px;
+}
+
+.talk .heart-instance {
+  height: 10px !important;
+  position: relative !important;
+  width: 10px !important;
+}
+
+.talk .profile {
+  align-items: center;
+  background-color: #0812254c;
+  border-radius: 269.12px;
+  display: flex;
+  justify-content: space-between;
+  margin-right: -21.28px;
+  padding: 2.69px 10.76px 2.69px 2.69px;
+  position: relative;
+  width: 141px;
+}
+
+.talk .profile-avatar {
+  background-image: url(https://c.animaapp.com/ma28oshf5ECohh/img/th-1.png);
+  background-position: 50% 50%;
+  background-size: cover;
+  border-radius: 269.12px;
+  height: 24.22px;
+  position: relative;
+  width: 24.22px;
+}
+
+.talk .profile-details {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1.35px;
+  justify-content: center;
+  margin-left: -2.38e-07px;
+  padding: 0px 4.04px;
+  position: relative;
+}
+
+.talk .username {
+  color: #ffffffcc;
+  font-family: var(--small-bold-font-family);
+  font-size: var(--small-bold-font-size);
+  font-style: var(--small-bold-font-style);
+  font-weight: var(--small-bold-font-weight);
+  letter-spacing: var(--small-bold-letter-spacing);
+  line-height: var(--small-bold-line-height);
+  margin-top: -0.59px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .email {
+  background: transparent;
+  border: none;
+  color: #ffffffb2;
+  font-family: var(--sususmall-font-family);
+  font-size: var(--sususmall-font-size);
+  font-style: var(--sususmall-font-style);
+  font-weight: var(--sususmall-font-weight);
+  letter-spacing: var(--sususmall-letter-spacing);
+  line-height: var(--sususmall-line-height);
+  margin-right: -1.82px;
+  padding: 0;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.talk .caret-down {
+  height: 8.07px;
+  margin-left: -2.38e-07px;
+  position: relative;
+  width: 8.07px;
+}

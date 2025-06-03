@@ -3,6 +3,7 @@ package com.example.qihuangserver.service;
 import com.example.qihuangserver.model.Conversation;
 import com.example.qihuangserver.model.User;
 import com.example.qihuangserver.repository.ConversationRepository;
+import com.example.qihuangserver.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConversationService {
     private final ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
 
     // 创建或更新对话
     @Transactional
@@ -50,5 +52,12 @@ public class ConversationService {
         conversation.setCreatedAt(Instant.now());
         conversation.setUpdatedAt(Instant.now());
         return conversationRepository.save(conversation); // 新建对话并保存
+    }
+
+    @Transactional
+    public void deleteConversationWithMessages(Long id) {
+
+        messageRepository.deleteByConv_Id(id);
+        conversationRepository.deleteById(id);
     }
 }
