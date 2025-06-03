@@ -382,7 +382,7 @@ export default {
   },
   methods: {
   // 在fetchUserProfile方法中确保正确存储用户信息
-async fetchUserProfile() {
+  async fetchUserProfile() {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -395,19 +395,44 @@ async fetchUserProfile() {
     });
 
     if (response.data?.data) {
-      // 更新store和localStorage
+      // 确保正确存储用户信息
+      const userData = response.data.data;
+      localStorage.setItem('userId', userData.userId);
+      localStorage.setItem('username', userData.username);
+
+      // 更新Vuex store
       this.$store.commit('setUser', {
-        userId: response.data.data.userId,
+        userId: userData.userId,
         token: token,
-        username: response.data.data.username
+        username: userData.username
       });
-      localStorage.setItem('userId', response.data.data.userId);
+
+      // 更新组件数据
+      this.userInfo = {
+        userId: userData.userId,
+        username: userData.username,
+        avatar: userData.avatar || ''
+      };
     }
   } catch (error) {
+    console.error('获取用户信息失败:', error);
     if (error.response?.status === 401) {
+      this.clearUserData();
       this.$router.push('/login');
     }
   }
+},
+
+clearUserData() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('username');
+  this.$store.commit('clearUser');
+  this.userInfo = {
+    userId: '',
+    username: '',
+    avatar: ''
+  };
 },
 
 
@@ -1675,7 +1700,7 @@ finalizeStreamingResponse(rawContent) {
 }
 .new-conversation-btn {
   width: 278px; /* Changed to specified width */
-  height: 50px; /* Changed to specified height */
+  height: 7%; /* Changed to specified height */
   padding: 10px;
   background-color: rgba(116, 158, 167, 1); /* Changed to specified color */
   color: white; /* Changed text color to white for better contrast */
@@ -1814,7 +1839,7 @@ finalizeStreamingResponse(rawContent) {
 
 .conversation-wrapper.active {
   width: 280px;
-  height: 50px;
+  height: 5%;
   margin-left: 16px; /* Instead of left:16px for proper layout */
   border-right: 1px solid #4a90e2;
   border-radius: 57px;
@@ -1825,10 +1850,6 @@ finalizeStreamingResponse(rawContent) {
 .conversation-wrapper:hover {
   border-color: #4a90e2;
 }
-
-
-
-
 
 
 .conversation-btn {
@@ -1853,6 +1874,7 @@ finalizeStreamingResponse(rawContent) {
   font-size: 18px;
   color: #666; /* Changed to match text color */
   border-left: 1px solid #eee; /* Lighter border */
+  border-radius: 57px;
 }
 
 
