@@ -226,13 +226,30 @@ import SelectionPopup from '@/views/Classic/SelectionPopup.vue'
 import { useCollectedStore } from '@/stores/classic'
 import SelectionIcon from '@/views/Classic/SelectionIcon.vue' 
 import Navi from '../components/NaviHomeView.vue'
+import { getProfileAPI } from '@/apis/user'
 
 const route = useRoute()
 const router = useRouter()
 const qastore = useQAClassicStore()
 const { classic, currentMessages, newMessage, quote, sending, loadingMessage } = storeToRefs(qastore)
+    const profile = ref({
+    username: '',
+    userId: '',
+    email: '',
+    avatar: '',
+    }) 
+  const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
+const userId = computed(() => profile.value.userId)
 
-const userId = 1 // 默认用户
 const collectedStore = useCollectedStore()
 
 // 返回目录方法
@@ -254,10 +271,8 @@ const goBackToClassics = () => {
 onMounted(async() => {
   qastore.fetchClassic(classicIdNum.value)
   qastore.fetchSessions(classicIdNum.value)
-  
-  
-  await collectedStore.fetchCollectedStatus(userId, classicIdNum.value)
-
+  await loadProfile()
+  await collectedStore.fetchCollectedStatus(userId.value, classicIdNum.value)
   console.log('isCollected',collectedStore.isCollected)
 })
 
@@ -307,7 +322,7 @@ const stopResize = () => {
 
 const toggleCollected = () => {
   const title = classic.value.title || '未知标题'
-  collectedStore.toggle(userId, classicIdNum.value, title)
+  collectedStore.toggle(userId.value, classicIdNum.value, title)
 }
 
 const isCollected = computed(() => collectedStore.isCollected)
@@ -408,7 +423,7 @@ const rate = (id, feedback) => qastore.rate(id, feedback)
 
 // 删除消息
 const deleteMsg = (id) => {
-  if (confirm('确定删除该消息及其所有后续对话吗？')) {
+  if (confirm('确定删除该消息及其所有后续对话吗？删除后将无法恢复')) {
     qastore.deleteMessage(id)
   }
 }
@@ -514,20 +529,6 @@ const selectSession = async (session) => {
 </script>
 
 <style scoped>
-/* .classic-container::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("https://c.animaapp.com/m9pqi0c3GNaMeT/img/back.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.3; 
-  z-index: -1;
-} */
 .book-header {
   display: flex;
   justify-content: space-between;
@@ -856,8 +857,8 @@ h1 {
 }
 
 .modal-content input {
-  width: 100%;
-  padding: 10px;
+  width: 92%;
+  padding: 4%;
   margin: 10px 0;
   border: 1px solid #ddd;
   border-radius: 4px;

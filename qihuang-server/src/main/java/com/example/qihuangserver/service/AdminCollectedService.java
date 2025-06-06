@@ -1,7 +1,7 @@
 package com.example.qihuangserver.service;
 
 
-import com.example.qihuangserver.model.AdminCollectedDTO;
+import com.example.qihuangserver.dto.classics.AdminCollectedDTO;
 import com.example.qihuangserver.model.Collected;
 import com.example.qihuangserver.repository.CollectedRepository;
 import com.example.qihuangserver.repository.UserRepository;

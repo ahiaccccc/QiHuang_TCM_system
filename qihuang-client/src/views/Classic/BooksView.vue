@@ -109,15 +109,29 @@ const goToPage = () => {
 }
 
 const fetchBooks = async () => {
-  await store.loadBooks({
-    page: page.value - 1,
-    size: pageSize,
-    name: searchQuery.value,
-    author: searchQuery.value,
-    dynasty: searchQuery.value
-  })
-  // 加载后更新输入框值为当前页
-  inputPage.value = page.value
+  try {
+    // store.setLoading(true);
+    await store.loadBooks({
+      page: page.value - 1,
+      size: pageSize,
+      name: searchQuery.value,
+      author: searchQuery.value,
+      dynasty: searchQuery.value
+    });
+    // console.log("书籍数据加载成功", store.books);
+    
+    // 添加数据验证
+    if (!Array.isArray(store.books)) {
+      console.error("API返回数据格式错误", store.books);
+      store.books = []; // 防止渲染错误
+    }
+    
+    inputPage.value = page.value;
+  } catch (error) {
+    console.error("加载书籍失败:", error);
+  } finally {
+    // store.setLoading(false);
+  }
 }
 
 onMounted(fetchBooks)

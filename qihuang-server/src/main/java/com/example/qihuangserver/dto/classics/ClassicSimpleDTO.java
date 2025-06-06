@@ -1,5 +1,6 @@
-package com.example.qihuangserver.model;
+package com.example.qihuangserver.dto.classics;
 
+import com.example.qihuangserver.model.Classic;
 import lombok.Data;
 
 // ClassicSimpleDTO.java
