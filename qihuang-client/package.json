@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "element-plus": "^2.9.11",
+    "event-source-polyfill": "^1.0.31",
     "marked": "^15.0.12",
     "naive-ui": "^2.41.0",
     "pinia": "^3.0.1",

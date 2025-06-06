@@ -41,7 +41,7 @@
           <div class="action-buttons">
             <template v-if="!isEditing">
               <button class="edit-btn" @click="startEditing">编辑资料</button>
-              <button class="reset-btn" @click="resetPassword">修改密码</button>
+              <button class="reset-btn" @click="resetPassword">重置密码</button>
             </template>
             <template v-else>
               <button class="edit-btn" @click="handleSubmit">保存</button>
@@ -49,6 +49,9 @@
             </template>
           </div>
         </div>
+      </div>
+      <div class="profile-container1">
+        <userCollections />
       </div>
     </div>
   </div>
@@ -60,6 +63,7 @@ import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import Navi from '../components/NaviHomeView.vue'
 import defaultAvatar from '../../assets/images/defaultAvatar.png'
+import userCollections from '@/views/Classic/userCollections.vue'
 
 import { getProfileAPI, updateProfileAPI, uploadAvatarAPI } from '@/apis/user'
 
@@ -186,7 +190,7 @@ const handleAvatarUpload = async (e) => {
 }
 
 const resetPassword = () => {
-  router.push('/changePassword')
+  router.push('/forgetPassword')
 }
 
 onMounted(async () => {
@@ -230,24 +234,21 @@ onMounted(async () => {
 .home-container {
   position: relative;
   min-height: 100vh;
-  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #e6f2f2;
 }
 
 .home-content {
   width: 100%;
-  flex: 1;
+  background-color: #e6f2f2;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
+  border-top: none;
   align-items: center;
+  gap: 20%;
 }
 
 .page-title {
-  align-self: flex-start;
   text-align: left;
   margin-bottom: 20px;
   margin-left: 10%;
@@ -263,6 +264,13 @@ onMounted(async () => {
   padding: 2% 0;
 }
 
+.profile-container1 {
+  width: 80%;
+  background-color: #ffffff;
+  margin: 5% auto;
+  /* justify-content: center; */
+  padding: 2% 0;
+}
 .avatar-section {
   margin: 20px;
   display: flex;
