@@ -14,6 +14,7 @@ httpInstance.interceptors.request.use(
   (config) => {
     // 从本地存储获取token
     const token = getToken()
+    // console.log('Token:', token) // 打印token以便调试
     if (token) {
       config.headers.Authorization = `Bearer ${token}` // Bearer方案
     }

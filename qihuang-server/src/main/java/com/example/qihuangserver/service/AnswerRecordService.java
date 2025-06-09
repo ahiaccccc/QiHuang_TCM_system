@@ -84,8 +84,9 @@ public class AnswerRecordService {
         return answerRecord;
     }
 
-    public AnswerRecordDTO getAnswerRecordDTO(Integer userId, Integer classId, Integer limit, PlayMode playMode, List<QuestionBankDTO> questions, String answerStr, LocalDateTime time) {
+    public AnswerRecordDTO getAnswerRecordDTO(Integer id,Integer userId, Integer classId, Integer limit, PlayMode playMode, List<QuestionBankDTO> questions, String answerStr, LocalDateTime time) {
         return AnswerRecordDTO.builder()
+                .id(id)
                 .userId(userId)
                 .classId(classId)
                 .number(limit)
@@ -120,7 +121,7 @@ public class AnswerRecordService {
             if (String.valueOf(userAnswer).equalsIgnoreCase(rightAnswer)) {
                 correctBuilder.append('1');
             } else {
-                correctBuilder.append('0');
+                correctBuilder.append(rightAnswer);
             }
         }
 

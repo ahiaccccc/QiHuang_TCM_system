@@ -1,9 +1,10 @@
 <template>
   <div class="xuanzhuti">
-    <img
-      class="back"
-      src="https://c.animaapp.com/mabzoynihMfxud/img/back.png"
+    <Navi
+      :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+      :nickname="profile.username"
     />
+    <img class="back" />
     <div class="hero-section">
       <div class="main-area">
         <div class="frame"></div>
@@ -56,12 +57,18 @@
                 </div>
                 <div v-else>
                   <div class="group">
-                    <div class="overlap-group">
+                    <div
+                      class="overlap-group"
+                      @click="startQuiz(item.id, 'PRACTICE', 30)"
+                    >
                       <div class="text-wrapper-3">模拟测试</div>
                     </div>
                   </div>
                   <div class="text-wrapper-4">{{ item.title }}</div>
-                  <div class="button-blue">
+                  <div
+                    class="button-blue"
+                    @click="startQuiz(item.id, 'RANK', 30)"
+                  >
                     <div class="text-wrapper-5">正式答题</div>
                   </div>
                   <div class="frame-4"></div>
@@ -84,67 +91,19 @@
         </div>
       </div>
     </div>
-    <div class="navigation">
-      <div class="nav-container">
-        <div class="left-column">
-          <div class="logo">
-            <img
-              class="img"
-              src="https://c.animaapp.com/mabzoynihMfxud/img/logo-1.png"
-            />
-            <div class="text-wrapper-10">岐黄慧问</div>
-          </div>
-          <div class="nav-links">
-            <div class="nav-link">
-              <div class="text-wrapper-11">AI问答</div>
-            </div>
-            <div class="nav-link-2">
-              <div class="text-wrapper-12">典籍解读</div>
-            </div>
-            <div class="nav-link-2">
-              <div class="text-wrapper-12">养生方案</div>
-            </div>
-            <div class="nav-link-2">
-              <div class="text-wrapper-13">答题挑战</div>
-            </div>
-          </div>
-        </div>
-        <div class="right-column">
-          <div class="icon-button"><img
-              class="bell"
-              src="https://c.animaapp.com/mabzoynihMfxud/img/bell.svg"
-            /></div>
-          <div class="icon-button">
-            <img
-              class="heart"
-              src="https://c.animaapp.com/mabzoynihMfxud/img/heart.svg"
-            />
-          </div>
-          <div class="profile">
-            <div class="profile-avatar"></div>
-            <div class="profile-details">
-              <div class="username">小奇</div>
-              <input
-                class="email"
-                placeholder="qixiaoxiao@136.com"
-                type="email"
-              />
-            </div>
-            <img
-              class="caret-down"
-              src="https://c.animaapp.com/mabzoynihMfxud/img/caretdown.svg"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { initAnswerRecord, findAllQuestionClasses, finishAnswerRecord } from '@/apis/question-apis'
+import {
+  initAnswerRecord,
+  findAllQuestionClasses,
+  finishAnswerRecord,
+  startAnswerRecord,
+} from '@/apis/question-apis'
 import { useQuizStore } from '@/stores/quiz'
 import { useRouter } from 'vue-router'
 
@@ -204,7 +163,7 @@ const computedQuizList = computed(() => {
           // 计算1的个数（正确答题数）
           const correctNum = (correctStr.match(/1/g) || []).length
           const rate = (correctNum / total) * 100
-          console.log(`类别ID: ${cls.id}, 正确率: ${rate.toFixed(2)}%`)
+          // console.log(`类别ID: ${cls.id}, 正确率: ${rate.toFixed(2)}%`)
 
           // 更新最高正确率
           if (rate > highestRate) {
@@ -227,30 +186,67 @@ const computedQuizList = computed(() => {
 })
 
 // 开始答题
-const startQuiz = (classId) => {
-  isActivating.value = true
-  activeClassId.value = classId
-  // 这里可以添加跳转到答题页面的逻辑
-  console.log('开始答题，类别ID:', classId)
+// const startQuiz = async (classId, playMode, limit) => {
+//   try {
+//     // 调用API开始答题
+//     const response = await startAnswerRecord(classId, playMode, limit)
+
+//     if (response) {
+//       // 获取当前类别的名称
+
+//       const className = classList.value.find((c) => c.id === classId)?.className || '未知类别'
+//       console.log('开始答题类别:', className)
+//       // 将答题信息存储到quizStore
+//       quizStore.setCurrentQuiz({
+//         ...response,
+//         className: className,
+//       })
+//       console.log('开始答题成功:', response)
+
+//       // 跳转到答题页面
+//       router.push({
+//         name: 'quiz-answer',
+//       })
+//     }
+//   } catch (error) {
+//     console.error('开始答题失败:', error)
+//     // 这里可以添加错误提示
+//   }
+// }
+// 开始答题
+const startQuiz = async (classId, playMode, limit) => {
+  try {
+    const className = classList.value.find((c) => c.id === classId)?.className || '未知类别'
+    // 调用API开始答题
+    await quizStore.startAnswerRecordStore(classId, playMode, limit, className)
+
+    // 跳转到答题页面
+    router.push({
+      name: 'quiz-answer',
+    })
+  } catch (error) {
+    console.error('开始答题失败:', error)
+    // 这里可以添加错误提示
+  }
 }
 
 // 停止答题
 const stopQuiz = async () => {
-  console.log('停止答题，当前回答记录ID:', activeRecord.value.id)
+  // console.log('停止答题，当前回答记录ID:', activeRecord.value.id)
   activeRecord.value = await finishAnswerRecord(activeRecord.value.id, activeRecord.value.answers)
   // 假设finishAnswerRecord是一个异步函数，返回更新后的记录
-  console.log('更新答题记录:', activeRecord.value)
-  let oldActiveClassId = activeRecord.value.id
+  // console.log('更新答题记录:', activeRecord.value)
+  // let oldActiveClassId = activeRecord.value.id
   isActivating.value = false
   activeClassId.value = null
   activeRecord.value = null
   // 这里可以添加停止答题的API调用
-  console.log('停止答题，类别ID:', oldActiveClassId)
+  // console.log('停止答题，类别ID:', oldActiveClassId)
   // 重新获取历史记录
   try {
     const historyResponse = await initAnswerRecord()
     historyList.value = historyResponse
-    console.log('更新后的历史答题记录:', historyResponse)
+    // console.log('更新后的历史答题记录:', historyResponse)
   } catch (error) {
     console.error('更新历史答题记录失败:', error)
   }
@@ -259,12 +255,12 @@ const stopQuiz = async () => {
 // 继续答题
 const continueQuiz = (classId) => {
   // 这里可以添加继续答题的逻辑
-  console.log('继续答题，类别ID:', classId)
+  // console.log('继续答题，类别ID:', classId)
 
   const classItem = classList.value.find((c) => c.id === classId)
-  console.log('继续答题的类别:', classItem)
+  // console.log('继续答题的类别:', classItem)
   const className = classItem ? classItem.className : '未知类别'
-  console.log('继续答题的类别名称:', className)
+  // console.log('继续答题的类别名称:', className)
   quizStore.setCurrentQuiz(activeRecord.value, className)
   // 跳转到答题页面
   router.push({
@@ -295,11 +291,37 @@ onMounted(async () => {
     // 获取问题类别
     const classResponse = await findAllQuestionClasses()
     classList.value = classResponse
-    console.log('获取所有题目类别返回:', classResponse)
+    // console.log('获取所有题目类别返回:', classResponse)
   } catch (error) {
     console.error('获取所有题目类别失败:', error)
   }
+  await loadProfile()
 })
+
+// ---------------- 用户信息 ----------------
+import Navi from '../components/NaviHomeView.vue'
+import { getProfileAPI } from '@/apis/user'
+import defaultAvatar from '../../assets/images/defaultAvatar.png'
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
+const profile = ref({
+  username: '',
+  userId: '',
+  email: '',
+  avatar: '',
+})
+const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+      // console.log('个人信息加载成功:', profile.value)
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -392,7 +414,7 @@ body {
     width: 100%;
     align-items: center;
     position: absolute;
-    top: 223px;
+    top: 148px;
     left: 0;
     background-color: var(--danlan);
   }
@@ -407,6 +429,7 @@ body {
     width: 148px;
     top: 3px;
     left: 10px;
+    margin: 20px;
     font-family: var(--susularge-bold-font-family);
     font-weight: var(--susularge-bold-font-weight);
     color: transparent;

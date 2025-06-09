@@ -33,4 +33,6 @@ public interface QuestionBankRepository extends JpaRepository<QuestionBank, Inte
             "WHERE q.id IN :ids")
     List<QuestionBankDTO> findByIds(List<Integer> ids);
 
+
+
 }

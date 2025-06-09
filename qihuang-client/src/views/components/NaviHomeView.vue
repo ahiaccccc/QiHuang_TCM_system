@@ -2,8 +2,15 @@
   <div class="header-container">
     <div class="navigation">
       <div class="left-column">
-        <div class="logo" @click="goToHome">
-          <img class="img" alt="Logo" :src="logo" />
+        <div
+          class="logo"
+          @click="goToHome"
+        >
+          <img
+            class="img"
+            alt="Logo"
+            :src="logo"
+          />
           <div class="title">岐黄慧问</div>
         </div>
       </div>
@@ -35,19 +42,33 @@
       <div class="right-column">
         <div class="user-profile">
           <div class="avatar">
-            <img class="avatar-img" :src="avatar" alt="用户头像" />
+            <img
+              class="avatar-img"
+              :src="avatar"
+              alt="用户头像"
+            />
           </div>
           <div class="nickname">{{ $props.nickname }}</div>
           <div class="dropdown-menu">
-            <div class="dropdown-item" @click.stop="goToProfile">个人主页</div>
-            <div class="dropdown-item" @click.stop="logout">退出</div>
+            <div
+              class="dropdown-item"
+              @click.stop="goToProfile"
+            >个人主页</div>
+            <div
+              class="dropdown-item"
+              @click.stop="logout"
+            >退出</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="header-background">
-      <img :src="back" alt="背景图" class="background-image" />
+      <img
+        :src="back"
+        alt="背景图"
+        class="background-image"
+      />
     </div>
   </div>
 </template>
@@ -78,11 +99,14 @@ const navigateTo = (route) => {
   currentRoute.value = route
   switch (route) {
     case 'classics':
-      router.push('/classics')
+      router.push('/books')
       break
 
     case 'ChatTest':
       router.push('/ChatTest')
+      break
+    case 'quiz':
+      router.push('/quiz-select')
       break
   }
 }

@@ -1,15 +1,26 @@
 <template>
+
   <div class="xuanzhuti">
-    <img
-      class="back"
-      src="https://c.animaapp.com/mabzoynihMfxud/img/back.png"
+    <Navi
+      :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+      :nickname="profile.username"
     />
+    <img class="back" />
     <div class="hero-section">
       <div class="main-area">
         <div class="frame"></div>
         <div class="div">
           <div class="div-wrapper">
-            <p class="p"><span class="text-wrapper">| </span> <span class="span">{{ quizClassName }}</span></p>
+            <p class="p"><span class="text-wrapper">| </span> <span class="span">{{ quizClassName }}</span>
+              <span
+                v-if="quizStore.currentQuiz && quizStore.currentQuiz.playMode === 'PRACTICE'"
+                style="color: black;"
+              >（训练模式）</span>
+              <span
+                v-else-if="quizStore.currentQuiz && quizStore.currentQuiz.playMode === 'RANK'"
+                style="color: black;"
+              >（正式模式）</span>
+            </p>
           </div>
           <div class="frame-2">
             <div class="overlap">
@@ -22,22 +33,27 @@
                       :key="index"
                       class="option-item"
                       @click="selectOption(index)"
-                      :class="{ 'selected': answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index}"
+                      :class="{ 'incorrect-option': isReviewMode && !isAnswerCorrect(currentIndex) && answers[currentIndex] === String.fromCharCode('A'.charCodeAt(0) + index),
+                                  'correct-option': correctOption(index),
+                                  
+                        'selected': (answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index) && !isReviewMode}"
                     >
-                      <input
+                      <!-- <input
                         type="radio"
                         :name="'question-' + currentIndex"
                         :value="index"
                         :checked="answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index"
                         @change="selectOption(index)"
-                      />
+                      /> -->
+                      <span v-if="answers[currentIndex].charCodeAt(0) - 'A'.charCodeAt(0) === index">●</span>
+                      <span v-else>○</span>
                       <span class="option-label">&nbsp;&nbsp;
                         {{ String.fromCharCode('A'.charCodeAt(0) + index) }}.
                         &nbsp; {{ option }}
                       </span>
                       <br>
 
-                      <!-- &nbsp;&nbsp;&nbsp;&nbsp; ○ {{ option }} ● -->
+                      <!-- &nbsp;&nbsp;&nbsp;&nbsp; ○ {{ option }}  -->
                     </div>
                   </div>
                 </div>
@@ -64,45 +80,171 @@
                 <div class="text-wrapper-6">单选题</div>
               </div>
             </div>
-            <div class="element-wrapper">
-              <p class="element"><span class="span"> 倒计时：</span> <span class="text-wrapper-7">{{ formattedTime }}</span></p>
-            </div>
-            <div class="frame-7">
-              <div class="text-wrapper-8">答题卡</div>
-              <div class="frame-8">
-                <div class="frame-9">
-                  <img
-                    class="rectangle"
-                    src="https://c.animaapp.com/mbf6k53cFAgMzt/img/rectangle-91911-1.svg"
-                  />
-                  <div class="text-wrapper-9">未作答</div>
+
+            <div
+              v-if="isReviewMode"
+              class="review-mode"
+            >
+              <!-- 修改答题卡部分 -->
+              <div class="frame-7">
+                <div class="text-wrapper-8">答题结果</div>
+                <div class="frame-8">
+
+                  <div class="frame-9">
+                    <svg
+                      class="status-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="2"
+                        y="2"
+                        width="20"
+                        height="20"
+                        rx="2"
+                        fill="rgba(92, 176, 106, 0.3)"
+                        stroke="#35565a"
+                        stroke-width="1"
+                      />
+                    </svg>
+                    <div class="text-wrapper-10">正确</div>
+                  </div>
+                  <div class="frame-9">
+                    <svg
+                      class="status-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="2"
+                        y="2"
+                        width="20"
+                        height="20"
+                        rx="2"
+                        fill="rgba(255, 59, 48, 0.3)"
+                        stroke="#ff3b30"
+                        stroke-width="1"
+                      />
+                    </svg>
+                    <div class="text-wrapper-10">错误</div>
+                  </div>
                 </div>
-                <div class="frame-9">
-                  <div class="text-wrapper-10">已作答</div>
-                  <img
-                    class="img"
-                    src="https://c.animaapp.com/mbf6k53cFAgMzt/img/rectangle-91911.svg"
-                  />
+                <div class="frame-10">
+                  <div
+                    v-for="(question, index) in questions"
+                    :key="index"
+                    class="frame-11"
+                    :class="{
+            'current': currentIndex === index,
+            'correct': isAnswerCorrect(index),
+            'incorrect': !isAnswerCorrect(index) && answers[index] !== '*'
+          }"
+                    @click="goToQuestion(index)"
+                  >
+                    <div class="text-wrapper-11">{{ index + 1 }}</div>
+                  </div>
                 </div>
               </div>
-              <div class="frame-10">
-                <div
-                  v-for="(question, index) in questions"
-                  :key="index"
-                  class="frame-11"
-                  :class="{
+
+              <!-- 修改提交按钮为返回按钮 -->
+              <div
+                class="button-blue-submit"
+                @click="goBack"
+              >
+                <div class="text-wrapper-4">返回</div>
+              </div>
+
+              <!-- 修改倒计时为正确率 -->
+              <div class="element-wrapper">
+                <p class="element">
+                  <span class="span">正确率：</span>
+                  <span class="text-wrapper-7">{{ accuracy }}%</span>
+                </p>
+              </div>
+            </div>
+            <div v-else>
+              <div class="element-wrapper">
+                <p class="element"><span class="span"> 倒计时：</span> <span class="text-wrapper-7">{{ formattedTime }}</span></p>
+              </div>
+              <div class="frame-7">
+                <div class="text-wrapper-8">答题卡</div>
+                <div class="frame-8">
+                  <div class="frame-9">
+                    <svg
+                      class="status-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="2"
+                        y="2"
+                        width="20"
+                        height="20"
+                        rx="2"
+                        fill="#ffffff"
+                        stroke="#000000"
+                        stroke-width="1"
+                      />
+                    </svg>
+                    <div class="text-wrapper-9">未作答</div>
+                  </div>
+                  <div class="frame-9">
+                    <svg
+                      class="status-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="2"
+                        y="2"
+                        width="20"
+                        height="20"
+                        rx="2"
+                        fill="#cecaca"
+                        stroke="#35565a"
+                        stroke-width="1"
+                      />
+                    </svg>
+                    <div class="text-wrapper-10">已作答</div>
+                  </div>
+                </div>
+                <div class="frame-10">
+                  <div
+                    v-for="(question, index) in questions"
+                    :key="index"
+                    class="frame-11"
+                    :class="{
                     'current': currentIndex === index,
                     'answered': answers[index] !== '*',
                     'unanswered':  answers[index] === '*'
                   }"
-                  @mouseover="hoverIndex = index"
-                  @mouseleave="hoverIndex = -1"
-                  @click="goToQuestion(index)"
-                >
-                  <div class="text-wrapper-11">{{ index + 1 }}</div>
+                    @mouseover="hoverIndex = index"
+                    @mouseleave="hoverIndex = -1"
+                    @click="goToQuestion(index)"
+                  >
+                    <div class="text-wrapper-11">{{ index + 1 }}</div>
+                  </div>
                 </div>
               </div>
+
+              <!-- 修改提交按钮部分 -->
+              <n-popconfirm
+                v-if="!isReviewMode"
+                :show="showSubmitConfirm"
+                @update:show="(value) => showSubmitConfirm = value"
+                @positive-click="submitAnswers"
+                negative-text="取消"
+                positive-text="确认提交"
+              >
+                <template #trigger>
+                  <div
+                    class="button-blue-submit"
+                    @click="showSubmitConfirm = true"
+                  >
+                    <div class="text-wrapper-4">提交</div>
+                  </div>
+                </template>
+                <span>确认要提交答案吗？提交后将无法修改。</span>
+              </n-popconfirm>
+
             </div>
+
           </div>
         </div>
       </div>
@@ -150,15 +292,20 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuizStore } from '@/stores/quiz'
+import { finishAnswerRecord } from '@/apis/question-apis'
+import { NPopconfirm, useLoadingBar, useDialog } from 'naive-ui'
 
 const route = useRouter()
 const quizStore = useQuizStore()
+const loadingBar = useLoadingBar()
+const dialog = useDialog()
 
 const quizClassName = ref('')
 const questions = ref([])
@@ -166,14 +313,170 @@ const answers = ref([])
 const currentIndex = ref(0)
 const selectedOption = ref(-1)
 const hoverIndex = ref(-1)
-const timeLeft = ref(1800) // 30分钟，单位秒
+// const timeLeft = ref(1800)
+// 新增时间差计算
+const elapsedTime = ref(0) // 已用秒数
+const isReviewMode = ref(false)
+const accuracy = ref(0)
+const correctCount = ref(0)
+const showSubmitConfirm = ref(false)
 
-// 计算格式化时间
+//-----时间-----//
+// 设置总考试时间（秒），例如30分钟=1800秒
+const TOTAL_EXAM_TIME = 1800
+const timeLeft = ref(TOTAL_EXAM_TIME) // 剩余时间
+let timer = null
+// 计算考试结束时间
+const getExamEndTime = () => {
+  if (!quizStore.currentQuiz?.time) return null
+  const startTime = new Date(quizStore.currentQuiz.time)
+  return new Date(startTime.getTime() + TOTAL_EXAM_TIME * 1000)
+}
+
+// 更新剩余时间
+const updateTimeLeft = () => {
+  const endTime = getExamEndTime()
+  if (!endTime) return
+
+  const now = new Date()
+  const diff = Math.floor((endTime - now) / 1000) // 剩余秒数
+
+  timeLeft.value = diff > 0 ? diff : 0
+
+  // 检查是否时间到
+  if (timeLeft.value <= 0) {
+    clearInterval(timer)
+    autoSubmitExam()
+  }
+}
+// 自动提交考试
+const autoSubmitExam = async () => {
+  try {
+    const answerString = answers.value.join('')
+    const res = await finishAnswerRecord(quizStore.currentQuiz.id, answerString)
+
+    // 计算正确率
+    let correctCount = 0
+    for (let i = 0; i < answers.value.length; i++) {
+      if (res.data.correct[i] === '1') correctCount++
+    }
+    const accuracy = Math.round((correctCount / answers.value.length) * 100)
+
+    // 弹出提示
+    alert(`考试时间结束！\n正确率: ${accuracy}%`)
+
+    // 进入复查模式
+    isReviewMode.value = true
+    quizStore.setReviewMode(res.data, accuracy)
+  } catch (error) {
+    console.error('自动提交失败:', error)
+    alert('自动提交失败，请手动提交答案')
+  }
+}
+
+// 格式化时间为MM:SS
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeLeft.value / 60)
   const seconds = timeLeft.value % 60
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
+
+// 修改submitAnswers函数
+const submitAnswers = async () => {
+  try {
+    loadingBar.start()
+
+    const answerString = answers.value.join('')
+    console.log('提交答案:', answerString)
+
+    const res = await finishAnswerRecord(quizStore.currentQuiz.id, answerString)
+    console.log('答案提交成功', res.data)
+
+    quizStore.setCurrentQuiz({
+      ...quizStore.currentQuiz,
+      answers: answerString,
+    })
+
+    // 计算正确率和正确数量
+    correctCount.value = 0
+    for (let i = 0; i < answers.value.length; i++) {
+      if (res.data.correct[i] === '1') {
+        correctCount.value++
+      }
+    }
+    accuracy.value = Math.round((correctCount.value / answers.value.length) * 100)
+
+    loadingBar.finish()
+
+    // 显示完成对话框
+    dialog.success({
+      title: '答题完成',
+      content: `恭喜您完成作答！正确率: ${accuracy.value}%`,
+      positiveText: '确定',
+      onPositiveClick: () => {
+        isReviewMode.value = true
+        quizStore.setReviewMode(res.data, accuracy.value)
+      },
+    })
+  } catch (error) {
+    loadingBar.error()
+    console.error('提交答案失败:', error)
+    dialog.error({
+      title: '提交失败',
+      content: '提交答案失败，请稍后再试。',
+      positiveText: '确定',
+    })
+  }
+}
+
+// 添加判断答案是否正确的方法
+const isAnswerCorrect = (index) => {
+  if (!quizStore.reviewData) return false
+  return quizStore.reviewData.correct[index] === '1'
+}
+
+// 添加返回函数
+const goBack = () => {
+  route.push({ name: 'quiz-select' })
+}
+
+// 修改选项样式逻辑
+const getOptionClass = (index) => {
+  if (!isReviewMode.value) return {}
+
+  const currentAnswer = answers.value[currentIndex.value]
+  const correctAnswer = quizStore.reviewData.correct[currentIndex.value]
+
+  // 如果是正确答案
+  if (String.fromCharCode('A'.charCodeAt(0) + index) === correctAnswer) {
+    return { 'correct-option': true }
+  }
+
+  // 如果是用户选择的错误答案
+  if (currentAnswer === String.fromCharCode('A'.charCodeAt(0) + index) && correctAnswer !== '1') {
+    return { 'incorrect-option': true }
+  }
+
+  return {}
+}
+
+const correctOption = (index) => {
+  if (!isReviewMode.value) return false
+
+  const correctAnswer = quizStore.reviewData.correct[currentIndex.value]
+  if (correctAnswer === '1')
+    return String.fromCharCode('A'.charCodeAt(0) + index) === answers.value[currentIndex.value]
+  return String.fromCharCode('A'.charCodeAt(0) + index) === correctAnswer
+}
+
+// ——————————————————————————————————
+
+// 计算格式化时间
+// const formattedTime = computed(() => {
+//   const minutes = Math.floor(timeLeft.value / 60)
+//   const seconds = timeLeft.value % 60
+//   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+// })
 
 // 当前问题
 const currentQuestion = computed(() => {
@@ -200,7 +503,7 @@ const beforeUnloadHandler = (e) => {
 }
 
 // 初始化数据
-onMounted(() => {
+onMounted(async () => {
   //判断currentQuiz是否存在
   if (!quizStore.currentQuiz) {
     console.error('当前测验不存在或未加载')
@@ -210,6 +513,7 @@ onMounted(() => {
   }
 
   quizClassName.value = quizStore.currentClassName
+  console.log('quizClassName:', quizStore.currentClassName)
   console.log('currentQuiz:', quizStore.currentQuiz)
   questions.value = quizStore.currentQuiz.questions || []
   answers.value = quizStore.currentQuiz.answers.split('')
@@ -227,23 +531,23 @@ onMounted(() => {
     selectedOption.value = -1
   }
 
-  // 启动计时器
-  const timer = setInterval(() => {
-    if (timeLeft.value > 0) {
-      timeLeft.value--
-    } else {
-      clearInterval(timer)
-    }
-  }, 1000)
+  // 替换原有的计时器
+  updateTimeLeft() // 立即更新一次
+  timer = setInterval(updateTimeLeft, 1000) // 每秒更新
+
   window.addEventListener('beforeunload', beforeUnloadHandler)
+  await loadProfile()
 })
 // 组件卸载前移除事件监听器
 onBeforeUnmount(() => {
+  quizStore.leaveQuiz() // 重置测验状态
   window.removeEventListener('beforeunload', beforeUnloadHandler)
+  clearInterval(timer)
 })
 
 // 选择选项
 const selectOption = (index) => {
+  if (isReviewMode.value) return // 在复查模式下不允许选择选项
   selectedOption.value = index
   answers.value[currentIndex.value] = String.fromCharCode('A'.charCodeAt(0) + index)
 }
@@ -284,10 +588,62 @@ const goToQuestion = (index) => {
     selectedOption.value = -1
   }
 }
+
+// ---------------- 用户信息 ----------------
+import Navi from '../components/NaviHomeView.vue'
+import { getProfileAPI } from '@/apis/user'
+import defaultAvatar from '../../assets/images/defaultAvatar.png'
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
+const profile = ref({
+  username: '',
+  userId: '',
+  email: '',
+  avatar: '',
+})
+const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+      console.log('个人信息加载成功:', profile.value)
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
 </script>
 
 <style>
-/* 原有样式保持不变，添加以下新样式 */
+/* --------------复查样式------------- */
+
+.review-mode .option-item {
+  cursor: default !important;
+}
+
+.correct-option {
+  background-color: rgba(92, 176, 106, 0.3) !important;
+  color: #35565a;
+  font-weight: bold;
+}
+
+.incorrect-option {
+  background-color: rgba(255, 59, 48, 0.3) !important;
+  color: #ff3b30;
+  font-weight: bold;
+}
+
+.frame-11.correct {
+  background-color: rgba(92, 176, 106, 0.3) !important;
+  border-color: #35565a !important;
+}
+
+.frame-11.incorrect {
+  background-color: rgba(255, 59, 48, 0.3) !important;
+  border-color: #ff3b30 !important;
+}
+/* ------------------------ */
 
 .option-item {
   cursor: pointer;
@@ -309,12 +665,12 @@ const goToQuestion = (index) => {
 }
 
 .frame-11.current {
-  border: 2px solid #35565a;
+  border: 2px solid #35565a !important;
   background-color: rgba(92, 176, 106, 0.3);
 }
 
 .frame-11.answered {
-  background-color: #f0f0f0;
+  background-color: #cecaca;
 }
 
 .frame-11.unanswered:hover {
@@ -337,7 +693,7 @@ const goToQuestion = (index) => {
   --large-font-weight: 400;
   --large-font-size: 18px;
   --large-letter-spacing: 0px;
-  --large-line-height: normal;
+  --large-line-height: 35px;
   --large-font-style: normal;
   --sularge-bold-font-family: 'DengXian', Helvetica;
   --sularge-bold-font-weight: 700;
@@ -449,7 +805,7 @@ a {
   gap: 34px;
   padding: 40px 40px 0px;
   position: absolute;
-  top: 223px;
+  top: 148px;
   left: 0;
   background-color: var(--danmi);
 }
@@ -521,10 +877,10 @@ a {
 }
 
 .xuanzhuti .text-wrapper-2 {
-  position: absolute;
-  width: 722px;
-  top: 1px;
-  left: 2px;
+  // position: absolute;
+  width: 100%;
+  // top: 1px;
+  // left: 2px;
   font-family: var(--large-font-family);
   font-weight: var(--large-font-weight);
   color: #000000;
@@ -535,10 +891,10 @@ a {
 }
 
 .xuanzhuti .text-wrapper-3 {
-  position: absolute;
-  width: 373px;
-  top: 39px;
-  left: 11px;
+  // position: absolute;
+  width: 100%;
+  // top: 39px;
+  // left: 11px;
   font-family: var(--large-font-family);
   font-weight: var(--large-font-weight);
   color: #000000;
@@ -583,6 +939,32 @@ a {
   margin-bottom: -23.5px;
   background-color: var(--zhonglv);
   border-radius: 8px;
+  &:hover {
+    background-color: #7abf8b;
+    cursor: pointer;
+  }
+}
+
+.button-blue-submit {
+  display: flex;
+  width: 112px;
+  height: 35px;
+  align-items: center;
+  justify-content: center;
+  padding: 10.76px;
+  position: absolute;
+  left: 80%;
+  top: 513px;
+  margin-top: -23.5px;
+  margin-bottom: -23.5px;
+  background-color: var(--zhonglv);
+  border-radius: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  &:hover {
+    background-color: #7abf8b;
+    cursor: pointer;
+  }
 }
 
 .xuanzhuti .text-wrapper-4 {
@@ -731,6 +1113,14 @@ a {
   padding: 0px 40px;
   position: relative;
   flex: 0 0 auto;
+  .status-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    position: absolute;
+    top: 10px;
+    left: 50px;
+  }
 }
 
 .xuanzhuti .frame-9 {
@@ -767,7 +1157,7 @@ a {
   position: absolute;
   width: 104px;
   top: 12px;
-  left: 34px;
+  left: 53px;
   font-family: var(--sularge-bold-font-family);
   font-weight: var(--sularge-bold-font-weight);
   color: #000000;
@@ -802,17 +1192,18 @@ a {
 
 .xuanzhuti .frame-11 {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 35px;
+  height: 35px;
   border: 1px solid;
   border-color: #000000;
 }
 
 .xuanzhuti .text-wrapper-11 {
   position: absolute;
-  width: 24px;
+  width: 100%;
+  height: 100%;
   top: 0;
-  left: -1px;
+  // left: -1px;
   font-family: var(--large-font-family);
   font-weight: var(--large-font-weight);
   color: #000000;
@@ -822,6 +1213,9 @@ a {
   line-height: var(--large-line-height);
   white-space: nowrap;
   font-style: var(--large-font-style);
+  &:hover {
+    background-color: rgba(92, 176, 106, 0.2);
+  }
 }
 
 .xuanzhuti .navigation {
