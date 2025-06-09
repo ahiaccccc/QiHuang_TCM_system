@@ -1,7 +1,7 @@
 package com.example.qihuangserver.service;
 
 
-import com.example.qihuangserver.dto.classics.AdminCollectedDTO;
+import com.example.qihuangserver.model.AdminCollectedDTO;
 import com.example.qihuangserver.model.Collected;
 import com.example.qihuangserver.repository.CollectedRepository;
 import com.example.qihuangserver.repository.UserRepository;
@@ -27,7 +27,7 @@ public class AdminCollectedService {
         return result.map(collected -> {
             AdminCollectedDTO dto = new AdminCollectedDTO();
             dto.setCollectedId(collected.getId());
-            dto.setUserId(collected.getUser().getUserId());
+            dto.setUserId(collected.getUser().getId());
             dto.setUserName(collected.getUser().getUsername());
             dto.setClassicId(collected.getClassic().getId());
             dto.setClassicTitle(collected.getClassic().getTitle());

@@ -10,11 +10,7 @@
 
           <!-- <div class="tabs" style="position: absolute; top: 20px; right: 150px;"> -->
           <div class="tabs">
-            <input
-              v-model="searchQuery"
-              placeholder="搜索书名、作者或朝代"
-              class="search-input text-wrapper-14"
-              style="
+            <input v-model="searchQuery" placeholder="搜索书名、作者或朝代" class="search-input text-wrapper-14" style="
               margin-right: 20px;
               padding: 8px 16px;
               border: 2px solid var(--huilan);
@@ -22,8 +18,7 @@
               background-color: var(--grayswhite);
               transition: all 0.3s ease;
               width: 270px;
-            "
-            />
+            " />
           </div>
 
           <!-- <button class="button-blue text-wrapper-15" @click="$router.push('/admin-classics')">
@@ -33,12 +28,7 @@
 
         <div class="div-wrapper">
           <div class="frame-2">
-            <div
-              v-for="book in books"
-              :key="book.id"
-              class="book-item"
-              @click="goToBook(book.id)"
-            >
+            <div v-for="book in books" :key="book.id" class="book-item" @click="goToBook(book.id)">
               <div class="book-info">
                 <div class="text-wrapper-6">{{ book.name }}</div>
                 <div class="text-wrapper-7">{{ book.author }}</div>
@@ -48,11 +38,7 @@
           </div>
           <div class="pagination-list">
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="prevPage"
-                :disabled="page === 1"
-              >‹</div>
+              <div class="text-wrapper-9" @click="prevPage" :disabled="page === 1">‹</div>
             </div>
             <div class="element-wrapper">
               <div class="element">{{ page }}</div>
@@ -62,21 +48,11 @@
               <div class="element">{{ store.totalPages }}</div>
             </div>
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="nextPage"
-                :disabled="page === store.totalPages"
-              >›</div>
+              <div class="text-wrapper-9" @click="nextPage" :disabled="page === store.totalPages">›</div>
             </div>
             <div class="pagination-input">
-              <input
-                type="number"
-                v-model.number="inputPage"
-                min="1"
-                :max="store.totalPages"
-                @keyup.enter="goToPage"
-                placeholder="页码"
-              />
+              <input type="number" v-model.number="inputPage" min="1" :max="store.totalPages" @keyup.enter="goToPage"
+                placeholder="页码" />
               <button @click="goToPage">跳转</button>
             </div>
           </div>
@@ -133,29 +109,15 @@ const goToPage = () => {
 }
 
 const fetchBooks = async () => {
-  try {
-    // store.setLoading(true);
-    await store.loadBooks({
-      page: page.value - 1,
-      size: pageSize,
-      name: searchQuery.value,
-      author: searchQuery.value,
-      dynasty: searchQuery.value,
-    })
-    // console.log("书籍数据加载成功", store.books);
-
-    // 添加数据验证
-    if (!Array.isArray(store.books)) {
-      console.error('API返回数据格式错误', store.books)
-      store.books = [] // 防止渲染错误
-    }
-
-    inputPage.value = page.value
-  } catch (error) {
-    console.error('加载书籍失败:', error)
-  } finally {
-    // store.setLoading(false);
-  }
+  await store.loadBooks({
+    page: page.value - 1,
+    size: pageSize,
+    name: searchQuery.value,
+    author: searchQuery.value,
+    dynasty: searchQuery.value
+  })
+  // 加载后更新输入框值为当前页
+  inputPage.value = page.value
 }
 
 onMounted(fetchBooks)
@@ -239,7 +201,7 @@ watch([searchQuery, page], fetchBooks)
   justify-content: center;
   gap: 10px;
   /* margin-top: 30px; */
-  margin: 0 auto;
+  margin:0 auto;
 }
 
 .pagination-input {

@@ -1,27 +1,18 @@
-import request from '@/utils/http'
+import axios from 'axios'
 
 export function getCollectedStatus(userId, classicId) {
-  const response = request({
-    url: '/collected/status',
-    method: 'GET',
+  return axios.get('/api/collected/status', {
     params: { userId, classicId }
   })
-  return response
 }
 
 export function toggleCollected(userId, classicId, title) {
-  return request({
-    url: '/collected/toggle',
-    method: 'POST',
+  return axios.post('/api/collected/toggle', null, {
     params: { userId, classicId, title }
   })
 }
-
-
 export function getUserCollected(userId) {
-  return request({
-    url: '/collected/list',
-    method: 'GET',
+  return axios.get('/api/collected/list', {
     params: { userId }
   })
 }

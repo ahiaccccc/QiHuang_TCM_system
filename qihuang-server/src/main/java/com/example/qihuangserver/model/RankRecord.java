@@ -36,6 +36,6 @@ public class RankRecord {
     private double score;
 
     @Column(name = "time")
-//    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime time;
 }
