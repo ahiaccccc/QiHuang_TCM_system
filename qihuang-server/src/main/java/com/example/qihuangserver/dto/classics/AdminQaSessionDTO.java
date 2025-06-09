@@ -1,4 +1,4 @@
-package com.example.qihuangserver.model;
+package com.example.qihuangserver.dto.classics;
 
 import lombok.Data;
 import java.time.Instant;

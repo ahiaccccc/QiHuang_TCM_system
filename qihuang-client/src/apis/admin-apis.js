@@ -1,8 +1,9 @@
-import axios from 'axios'
+import request from '@/utils/http'
 
-// 获取收藏记录
 export const getAdminCollections = async (params) => {
-  const response = await axios.get('/api/admin/collected', {
+  const response = await request({
+    url: '/admin/collected',
+    method: 'GET',
     params: {
       userId: params.userId || undefined,
       classicId: params.classicId || undefined,
@@ -10,15 +11,18 @@ export const getAdminCollections = async (params) => {
       size: params.size
     }
   });
-  return response.data;
+  return response;
 };
 
-// 删除收藏记录
-export const deleteCollection = (id) => axios.delete(`/api/admin/collected/${id}`);
+export const deleteCollection = (id) => request({
+  url: `/admin/collected/${id}`,
+  method: 'DELETE'
+});
 
-// 获取对话记录
 export const getAdminQaSessions = async (params) => {
-  const response = await axios.get('/api/admin/qa-sessions', {
+  const response = await request({
+    url: '/admin/qa-sessions',
+    method: 'GET',
     params: {
       userId: params.userId || undefined,
       classicId: params.classicId || undefined,
@@ -26,14 +30,24 @@ export const getAdminQaSessions = async (params) => {
       size: params.size
     }
   });
-  return response.data;
+  return response;
 };
 
-// 删除对话记录
-export const deleteQaSession = (id) => axios.delete(`/api/admin/qa-sessions/${id}`);
+export const deleteQaSession = (id) => request({
+  url: `/admin/qa-sessions/${id}`,
+  method: 'DELETE'
+});
 
-// 获取会话消息
-export const getAdminQaMessages = (sessionId) => axios.get(`/api/admin/qa-sessions/${sessionId}/messages`);
+export const getAdminQaMessages = async (sessionId) => {
+  const response= await request({
+  url: `/admin/qa-sessions/${sessionId}/messages`,
+  method: 'GET'
+});
+//console.log("获取对话消息:", response);
+  return response;
+};
 
-// 删除消息
-export const deleteQaMessage = (id) => axios.delete(`/api/admin/qa-sessions/messages/${id}`);
+export const deleteQaMessage = (id) => request({
+  url: `/admin/qa-sessions/messages/${id}`,
+  method: 'DELETE'
+});

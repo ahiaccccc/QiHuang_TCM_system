@@ -1,4 +1,4 @@
-package com.example.qihuangserver.model;
+package com.example.qihuangserver.dto.classics;
 
 import lombok.Data;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-import java.util.List;
 
 // PageDTO.java
 @Data

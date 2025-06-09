@@ -1833,7 +1833,7 @@ export default {
 }
 .new-conversation-btn {
   width: 278px; /* Changed to specified width */
-  height: 50px; /* Changed to specified height */
+  height: 7%; /* Changed to specified height */
   padding: 10px;
   background-color: rgba(116, 158, 167, 1); /* Changed to specified color */
   color: white; /* Changed text color to white for better contrast */
@@ -1943,7 +1943,7 @@ export default {
 
 .conversation-wrapper.active {
   width: 280px;
-  height: 50px;
+  height: 5%;
   margin-left: 16px; /* Instead of left:16px for proper layout */
   border-right: 1px solid #4a90e2;
   border-radius: 57px;
@@ -1974,6 +1974,7 @@ export default {
   font-size: 18px;
   color: #666; /* Changed to match text color */
   border-left: 1px solid #eee; /* Lighter border */
+  border-radius: 57px;
 }
 
 /* Ellipsis button - active state */

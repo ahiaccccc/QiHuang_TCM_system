@@ -1,6 +1,6 @@
 package com.example.qihuangserver.service;
 
-import com.example.qihuangserver.model.AdminQaSessionDTO;
+import com.example.qihuangserver.dto.classics.AdminQaSessionDTO;
 import com.example.qihuangserver.model.QaMessage;
 import com.example.qihuangserver.model.QaSession;
 import com.example.qihuangserver.model.User;
