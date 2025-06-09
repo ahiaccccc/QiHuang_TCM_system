@@ -78,7 +78,7 @@
         <h3 class="badge-title">我的勋章</h3>
         <div
           class="badge-container"
-          v-if="profile.userId !== '100000006'"
+          v-if="profile.userId == 100000006"
         >
 
           <div
@@ -98,7 +98,9 @@
           </div>
 
         </div>
-
+        <div v-else>
+          <p>暂无勋章</p>
+        </div>
       </div>
       <div class="profile-container1">
         <userCollections />
@@ -264,7 +266,7 @@ const handleAvatarUpload = async (e) => {
 }
 
 const resetPassword = () => {
-  router.push('/forgetPassword')
+  router.push('/changePassword')
 }
 
 onMounted(async () => {

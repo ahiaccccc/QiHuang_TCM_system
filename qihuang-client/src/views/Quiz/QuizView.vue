@@ -41,7 +41,14 @@
                     <div class="text-wrapper-5">继续答题</div>
                   </div>
 
-                  <div class="frame-4"></div>
+                  <div
+                    class="frame-4"
+                    :style="{ 
+    backgroundImage: `url('${getImageUrl(item.title)}')`,
+      backgroundSize: 'cover',
+      backgroundPosition: '50% 50%'
+  }"
+                  ></div>
                   <div class="frame-5">
                     <!-- 修改1：激活状态下显示答题进度 -->
                     <div class="frame-6">
@@ -106,6 +113,15 @@ import {
 } from '@/apis/question-apis'
 import { useQuizStore } from '@/stores/quiz'
 import { useRouter } from 'vue-router'
+
+const getImageUrl = (title) => {
+  console.log('获取图片URL，类别标题:', title)
+  try {
+    return `/${title}.png`
+  } catch {
+    return '' // 或返回默认图片
+  }
+}
 
 // 定义响应式数据
 const classList = ref([]) // 存储问题类别
@@ -185,34 +201,6 @@ const computedQuizList = computed(() => {
   })
 })
 
-// 开始答题
-// const startQuiz = async (classId, playMode, limit) => {
-//   try {
-//     // 调用API开始答题
-//     const response = await startAnswerRecord(classId, playMode, limit)
-
-//     if (response) {
-//       // 获取当前类别的名称
-
-//       const className = classList.value.find((c) => c.id === classId)?.className || '未知类别'
-//       console.log('开始答题类别:', className)
-//       // 将答题信息存储到quizStore
-//       quizStore.setCurrentQuiz({
-//         ...response,
-//         className: className,
-//       })
-//       console.log('开始答题成功:', response)
-
-//       // 跳转到答题页面
-//       router.push({
-//         name: 'quiz-answer',
-//       })
-//     }
-//   } catch (error) {
-//     console.error('开始答题失败:', error)
-//     // 这里可以添加错误提示
-//   }
-// }
 // 开始答题
 const startQuiz = async (classId, playMode, limit) => {
   try {
@@ -612,8 +600,7 @@ body {
     height: 117px;
     top: 0;
     left: 0;
-    background: url(https://c.animaapp.com/mabzoynihMfxud/img/frame-1437252860-8.png) 50% 50% /
-      cover;
+    // background: url(../../../public/中医基础理论.jpg) 50% 50% / cover;
   }
 
   .frame-5 {
@@ -952,69 +939,6 @@ body {
   }
 }
 
-// :root {
-//   --shenlan: rgba(53, 86, 90, 1);
-//   --zhonglv: rgba(92, 176, 106, 1);
-//   --heilan: rgba(71, 85, 105, 1);
-//   --danlan: rgba(232, 239, 238, 1);
-//   --black-1: rgba(68, 68, 68, 1);
-//   --grayswhite: rgba(255, 255, 255, 1);
-//   --transparent: rgba(255, 255, 255, 0.6);
-//   --middle-font-family: 'DengXian', Helvetica;
-//   --middle-font-weight: 400;
-//   --middle-font-size: 16px;
-//   --middle-letter-spacing: 0px;
-//   --middle-line-height: normal;
-//   --middle-font-style: normal;
-//   --susularge-bold-font-family: 'DengXian', Helvetica;
-//   --susularge-bold-font-weight: 700;
-//   --susularge-bold-font-size: 26px;
-//   --susularge-bold-letter-spacing: 0px;
-//   --susularge-bold-line-height: normal;
-//   --susularge-bold-font-style: normal;
-//   --large-bold-font-family: 'DengXian', Helvetica;
-//   --large-bold-font-weight: 700;
-//   --large-bold-font-size: 18px;
-//   --large-bold-letter-spacing: 0px;
-//   --large-bold-line-height: normal;
-//   --large-bold-font-style: normal;
-//   --heading-font-family: 'Inter', Helvetica;
-//   --heading-font-weight: 600;
-//   --heading-font-size: 24px;
-//   --heading-letter-spacing: -0.48px;
-//   --heading-line-height: 120.00000762939453%;
-//   --heading-font-style: normal;
-//   --single-line-body-base-font-family: 'Inter', Helvetica;
-//   --single-line-body-base-font-weight: 400;
-//   --single-line-body-base-font-size: 16px;
-//   --single-line-body-base-letter-spacing: 0px;
-//   --single-line-body-base-line-height: 100%;
-//   --single-line-body-base-font-style: normal;
-//   --body-strong-font-family: 'Inter', Helvetica;
-//   --body-strong-font-weight: 600;
-//   --body-strong-font-size: 16px;
-//   --body-strong-letter-spacing: 0px;
-//   --body-strong-line-height: 140%;
-//   --body-strong-font-style: normal;
-//   --body-base-font-family: 'Inter', Helvetica;
-//   --body-base-font-weight: 400;
-//   --body-base-font-size: 16px;
-//   --body-base-letter-spacing: 0px;
-//   --body-base-line-height: 140%;
-//   --body-base-font-style: normal;
-//   --small-bold-font-family: 'DengXian', Helvetica;
-//   --small-bold-font-weight: 700;
-//   --small-bold-font-size: 14px;
-//   --small-bold-letter-spacing: 0px;
-//   --small-bold-line-height: normal;
-//   --small-bold-font-style: normal;
-//   --sususmall-font-family: 'DengXian', Helvetica;
-//   --sususmall-font-weight: 400;
-//   --sususmall-font-size: 10px;
-//   --sususmall-letter-spacing: 0px;
-//   --sususmall-line-height: normal;
-//   --sususmall-font-style: normal;
-//   --drop-shadow-200: 0px 1px 4px 0px rgba(12, 12, 13, 0.05), 0px 1px 4px 0px rgba(12, 12, 13, 0.1);
 // }
 </style>
 
