@@ -32,13 +32,10 @@
         </div>
       </div>
 
-
-      <div class="logo-section">
-        <div class="logo-2">
-          <img class="logo-3" alt="Logo" src="https://c.animaapp.com/ma28oshf5ECohh/img/logo-1-1.png" />
-          <div class="text-wrapper-9">岐黄慧问</div>
-        </div>
-      </div>
+      <div class="logo-2" @click="goToHome">
+  <img class="logo-3" alt="Logo" src="https://c.animaapp.com/ma28oshf5ECohh/img/logo-1-1.png" />
+  <div class="text-wrapper-9">岐黄慧问</div>
+</div>
     </div>
     <!-- 侧边栏 -->
 
@@ -381,6 +378,11 @@ export default {
     this.closeEventSource();
   },
   methods: {
+
+    goToHome() {
+    // 使用路由跳转到首页
+    this.$router.push('/profile');
+  },
   // 在fetchUserProfile方法中确保正确存储用户信息
   async fetchUserProfile() {
   try {
@@ -3117,6 +3119,18 @@ finalizeStreamingResponse(rawContent) {
 .cancel-file-btn:hover {
   background-color: #ff7875;
   transform: scale(1.05);
+}
+.logo-2 {
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+  transition: transform 0.2s ease; /* 添加平滑过渡效果 */
+}
+
+.logo-2:hover {
+  transform: scale(1.05); /* 悬停时轻微放大 */
+}
+
+.logo-2:active {
+  transform: scale(0.98); /* 点击时轻微缩小 */
 }
 </style>
 
