@@ -78,7 +78,14 @@
                   >
                     <div class="text-wrapper-5">正式答题</div>
                   </div>
-                  <div class="frame-4"></div>
+                  <div
+                    class="frame-4"
+                    :style="{ 
+    backgroundImage: `url('${getImageUrl(item.title)}')`,
+      backgroundSize: 'cover',
+      backgroundPosition: '50% 50%'
+  }"
+                  ></div>
                   <div class="frame-5">
                     <div class="frame-6">
                       <div class="text-wrapper-6">{{ item.rate }}</div>
@@ -115,9 +122,8 @@ import { useQuizStore } from '@/stores/quiz'
 import { useRouter } from 'vue-router'
 
 const getImageUrl = (title) => {
-  console.log('获取图片URL，类别标题:', title)
   try {
-    return `/${title}.png`
+    return `/${title}.jpg`
   } catch {
     return '' // 或返回默认图片
   }
