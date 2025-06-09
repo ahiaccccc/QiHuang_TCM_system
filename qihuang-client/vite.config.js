@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -21,16 +20,12 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+<<<<<<< HEAD
         additionalData: '@import "@/assets/style/mixin.scss";',
+=======
+        additionalData: '@use "@/assets/style/mixin.scss";',
+>>>>>>> parent of 2c74f9e (Merge branch 'main' of https://github.com/ahiaccccc/QiHuang_TCM_system)
       },
     },
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true
-      }
-    }
-  }
 })

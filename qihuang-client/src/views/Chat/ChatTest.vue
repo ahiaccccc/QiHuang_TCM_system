@@ -178,8 +178,9 @@
               <ul class="suggestion-list">
                 <li @click="useSuggestion('中医如何调理失眠？')">中医如何调理失眠？</li>
                 <li @click="useSuggestion('请解释一下气血不足的表现')">请解释一下气血不足的表现</li>
-                <li @click="useSuggestion('推荐一些适合秋季养生的食疗方')">推荐一些适合秋季养生的食疗方</li>
                 <li @click="useSuggestion('针灸治疗头痛有哪些穴位？')">针灸治疗头痛有哪些穴位？</li>
+                <li @click="useSuggestion('推荐一些适合秋季养生的食疗方')">推荐一些适合秋季养生的食疗方</li>
+
               </ul>
               <p class="tip">点击上方问题可以直接提问，或者在下方的输入框中输入您的问题</p>
             </div>
@@ -370,112 +371,96 @@
                       alt="speak"
                       class="icon-img"
                     >
-                    <div
-                      class="messages"
-                      ref="messages"
-                    >
-                      <!-- 引导语部分 -->
-                      <div
-                        v-if="isNewConversation"
-                        class="welcome-message"
-                      >
-                        <div class="welcome-content">
-                          <h2>欢迎使用岐黄慧问</h2>
-                          <p>我是您的中医健康助手，可以为您解答以下问题：</p>
-                          <ul class="suggestion-list">
-                            <li @click="useSuggestion('中医如何调理失眠？')">中医如何调理失眠？</li>
-                            <li @click="useSuggestion('请解释一下气血不足的表现')">请解释一下气血不足的表现</li>
-                            <li @click="useSuggestion('针灸治疗头痛有哪些穴位？')">针灸治疗头痛有哪些穴位？</li>
-                            <li @click="useSuggestion('推荐一些适合秋季养生的食疗方')">推荐一些适合秋季养生的食疗方</li>
-
-                          </ul>
-                          <p class="tip">点击上方问题可以直接提问，或者在下方的输入框中输入您的问题</p>
-                        </div>
-                      </div>
-
-                      <!-- 语言选择下拉菜单 -->
-                      <div
-                        class="language-selector"
-                        v-if="isTranslated(index)"
-                      >
-                        <label>翻译为: </label>
-                        <select
-                          v-model="defaultTargetLanguage"
-                          @change="changeTranslationLanguage($event.target.value)"
-                        >
-                          <option
-                            v-for="lang in translationLanguages"
-                            :value="lang.code"
-                            :key="lang.code"
-                          >
-                            {{ lang.name }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
+                    <span
+                      v-else
+                      class="speaking-indicator"
+                    >🔴</span>
+                  </button>
                 </div>
 
+                <!-- 语言选择下拉菜单 -->
+                <div
+                  class="language-selector"
+                  v-if="isTranslated(index)"
+                >
+                  <label>翻译为: </label>
+                  <select
+                    v-model="defaultTargetLanguage"
+                    @change="changeTranslationLanguage($event.target.value)"
+                  >
+                    <option
+                      v-for="lang in translationLanguages"
+                      :value="lang.code"
+                      :key="lang.code"
+                    >
+                      {{ lang.name }}
+                    </option>
+                  </select>
+                </div>
               </div>
-
             </div>
 
-            <div class="input-container">
-              <input
-                type="file"
-                ref="fileInput"
-                style="display: none"
-                @change="handleFileChange"
-              />
-              <button
-                @click="triggerFileInput"
-                class="send-btn"
-                style="margin-right: 10px;"
-              >📎 上传附件</button>
-              <span
-                v-if="selectedFile"
-                style="font-size: 12px; margin-right: 10px;"
-              >{{ selectedFile.name }}</span>
-              <button
-                v-if="selectedFile"
-                @click="cancelFileUpload"
-                class="cancel-file-btn"
-                style="margin-right: 10px;"
-              >
-                ✖ 取消
-              </button>
-
-              <input
-                v-model="userInput"
-                @keyup.enter="sendMessage"
-                placeholder="您想了解什么······"
-                class="user-input"
-              />
-              <button
-                v-if="!isGenerating"
-                @click="sendMessage"
-                class="icon-send-btn"
-              >
-                <img
-                  src="@/assets/images/send.png"
-                  alt="发送"
-                  class="send-icon"
-                >
-              </button>
-              <button
-                v-else
-                @click="stopGeneration"
-                class="icon-send-btn stop-btn"
-              >
-                <img
-                  src="@/assets/images/停止.png"
-                  alt="停止"
-                  class="send-icon"
-                >
-              </button>
-            </div>
           </div>
+
+        </div>
+
+        <div class="input-container">
+          <input
+            type="file"
+            ref="fileInput"
+            style="display: none"
+            @change="handleFileChange"
+          />
+          <button
+            @click="triggerFileInput"
+            class="send-btn"
+            style="margin-right: 10px;"
+          >📎 上传附件</button>
+          <span
+            v-if="selectedFile"
+            style="font-size: 12px; margin-right: 10px;"
+          >{{ selectedFile.name }}</span>
+          <button
+            v-if="selectedFile"
+            @click="cancelFileUpload"
+            class="cancel-file-btn"
+            style="margin-right: 10px;"
+          >
+            ✖ 取消
+          </button>
+
+          <input
+            v-model="userInput"
+            @keyup.enter="sendMessage"
+            placeholder="您想了解什么······"
+            class="user-input"
+          />
+          <button
+            v-if="!isGenerating"
+            @click="sendMessage"
+            class="icon-send-btn"
+          >
+            <img
+              src="@/assets/images/send.png"
+              alt="发送"
+              class="send-icon"
+            >
+          </button>
+          <button
+            v-else
+            @click="stopGeneration"
+            class="icon-send-btn stop-btn"
+          >
+            <img
+              src="@/assets/images/停止.png"
+              alt="停止"
+              class="send-icon"
+            >
+          </button>
         </div>
       </div>
+    </div>
+  </div>
 </template>
 
 

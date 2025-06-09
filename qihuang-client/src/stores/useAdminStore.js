@@ -59,11 +59,6 @@ export const useAdminStore = defineStore('admin', {
       this.totalQaSessions = res.totalElements;
     },
 
-    // 删除收藏记录
-    async removeCollection(id) {
-      await deleteCollection(id);
-      await this.loadCollections();
-    },
 
     // 删除对话记录
     async removeQaSession(id) {
@@ -74,8 +69,9 @@ export const useAdminStore = defineStore('admin', {
         async loadQaMessages(sessionId) {
       try {
         const res = await getAdminQaMessages(sessionId);
+        console.log('加载对话消息:', res);
         // 确保返回数据结构正确
-        this.qaMessages = res.data.map(msg => ({
+        this.qaMessages = res.map(msg => ({
           id: msg.id,  // 确保使用正确的ID字段
           session: { id: msg.session?.id },  // 处理嵌套session对象
           role: msg.role,

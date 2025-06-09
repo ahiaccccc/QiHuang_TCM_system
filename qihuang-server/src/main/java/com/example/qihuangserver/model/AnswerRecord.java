@@ -34,7 +34,7 @@ public class AnswerRecord {
     private String correct;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "mode", columnDefinition = "ENUM('practice','rank')")
+    @Column(name = "mode", columnDefinition = "ENUM('PRACTICE','RANK')")
     private PlayMode playMode;
 
     @Column
