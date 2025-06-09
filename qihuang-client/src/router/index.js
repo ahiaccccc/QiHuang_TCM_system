@@ -52,6 +52,15 @@ const router = createRouter({
       component:()=> import('../views/Quiz/QuizAnswerSheet.vue'),
     },
     {
+      path: '/quiz-select-admin',
+      name: 'quiz-select-admin',
+      component:()=> import('../views/Quiz/QuizViewAdmin.vue'),
+    },{
+      path: '/quiz-answer-admin',
+      name: 'quiz-answer-admin',
+      component:()=> import('../views/Quiz/QuizAnswerSheetAdmin.vue'),
+    },
+    {
       path: '/ChatTest',
       name: 'ChatTest',
       // route level code-splitting
