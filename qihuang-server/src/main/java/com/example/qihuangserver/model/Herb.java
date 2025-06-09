@@ -20,6 +20,6 @@ public class Herb {
 
     private String name;
     private String imageUrl;
-    private String effect;
-    private String usage;
+    private String description;
+    private Date createdTime;
 }

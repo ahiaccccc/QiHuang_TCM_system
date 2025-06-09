@@ -1,10 +1,5 @@
 import request from '@/utils/http'
 
-/**
- * 获取某一类别的题目列表
- * @param {*} classId 类别id
- * @returns 
- */
 export const findQuestionByclassId = (classId) => {
   return request({
     url: '/questionBank/findQuestionByClassId',
