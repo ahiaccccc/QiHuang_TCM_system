@@ -56,12 +56,68 @@
             >个人主页</div>
             <div
               class="dropdown-item"
+              @click.stop="showDailyCard"
+            >每日卡片</div>
+            <div
+              class="dropdown-item"
               @click.stop="logout"
             >退出</div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 加载遮罩 -->
+    <n-spin :show="loading">
+      <div
+        v-if="loading"
+        class="global-mask"
+      ></div>
+    </n-spin>
+
+    <!-- 中药卡片弹窗 -->
+    <n-modal
+      v-model:show="showCardModal"
+      @clickoutside="closeModal"
+    >
+      <n-card
+        style="width: 600px; max-width: 90vw;"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="herb-card">
+          <img
+            class="herb-image"
+            :src="herbCardData.img"
+            alt="中药图片"
+          />
+          <div class="herb-title">
+            <n-icon
+              size="24"
+              class="icon"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                <path d="M11 7h2v5h-2zm0 6h2v2h-2z" />
+              </svg>
+            </n-icon>
+            <span>每日中药材推荐</span>
+          </div>
+
+          <div class="herb-content">
+            <h3>{{ herbCardData.name }}</h3>
+            <p class="herb-describe">{{ herbCardData.describe }}</p>
+            <p class="herb-word">——{{ herbCardData.word }}</p>
+          </div>
+        </div>
+      </n-card>
+    </n-modal>
 
     <div class="header-background">
       <img
@@ -74,13 +130,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { NSpin, NModal, NCard } from 'naive-ui'
 import logo from '../../assets/images/logo.png'
 import back from '../../assets/images/back.png'
 import { removeToken } from '@/utils/auth'
+import { getHerbCard } from '@/apis/herb-apis'
 
-defineProps({
+const props = defineProps({
   avatar: {
     type: String,
     required: true,
@@ -94,20 +152,119 @@ defineProps({
 const router = useRouter()
 const showDropdown = ref(false)
 const currentRoute = ref('')
+const loading = ref(false)
+const showCardModal = ref(false)
+
+// ---------------------中药卡片-------------
+const herbCardData = ref(null) // 存储预先获取的卡片数据
+const isFetching = ref(false) // 标记是否正在获取数据
+const herbData = ref({
+  img: '',
+  name: '',
+  describe: '',
+  word: '',
+})
+
+const showDailyCard = async () => {
+  showDropdown.value = false
+
+  // 如果数据已经存在，直接显示
+  if (herbCardData.value) {
+    console.log('已存在卡片数据，直接显示', herbCardData.value)
+    showCardModal.value = true
+    return
+  }
+
+  // 如果数据不存在且正在获取中，等待获取完成
+  if (isFetching.value) {
+    loading.value = true
+    // 创建一个轮询检查数据是否已获取
+    const checkInterval = setInterval(() => {
+      if (herbCardData.value) {
+        clearInterval(checkInterval)
+        loading.value = false
+        showCardModal.value = true
+      }
+    }, 300)
+    return
+  }
+
+  // 如果数据不存在且没有在获取中，重新获取
+  loading.value = true
+  try {
+    const response = await getHerbCard()
+    herbCardData.value = {
+      img: response.img || 'https://sys01.lib.hkbu.edu.hk/cmed/mpid/images/D00483.jpg',
+      name: response.name || '宁夏枸杞，中宁枸杞',
+      describe: response.describe || '对免疫功能有影响作用...',
+      word: response.word || 'what can i say!',
+    }
+    showCardModal.value = true
+  } catch (error) {
+    console.error('获取每日卡片失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+// 在组件挂载时获取卡片数据
+onMounted(async () => {
+  if (!herbCardData.value && !isFetching.value) {
+    isFetching.value = true
+    try {
+      const response = await getHerbCard()
+      herbCardData.value = {
+        img: response.img || 'https://sys01.lib.hkbu.edu.hk/cmed/mpid/images/D00483.jpg',
+        name: response.name || '宁夏枸杞，中宁枸杞',
+        describe: response.describe || '对免疫功能有影响作用...',
+        word: response.word || 'what can i say!',
+      }
+    } catch (error) {
+      console.error('预加载每日卡片失败:', error)
+      // 即使失败也设置为false，避免阻塞后续请求
+      isFetching.value = false
+    } finally {
+      isFetching.value = false
+    }
+  }
+})
+
+const closeModal = () => {
+  showCardModal.value = false
+}
+
+//------------------------------------------------
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+}
 
 const navigateTo = (route) => {
   currentRoute.value = route
-  switch (route) {
-    case 'classics':
-      router.push('/books')
-      break
 
-    case 'ChatTest':
-      router.push('/ChatTest')
-      break
-    case 'quiz':
-      router.push('/quiz-select')
-      break
+  if (props.nickname === 'admin') {
+    switch (route) {
+      case 'classics':
+        router.push('/admin-classics') // 管理员典籍管理页面
+        break
+      case 'ChatTest':
+        router.push('/ChatAdmin') // 管理员AI问答管理页面
+        break
+      case 'quiz':
+        router.push('/quiz-select-admin') // 管理员答题管理页面
+        break
+    }
+  } else {
+    switch (route) {
+      case 'classics':
+        router.push('/books')
+        break
+      case 'ChatTest':
+        router.push('/ChatTest')
+        break
+      case 'quiz':
+        router.push('/quiz-select')
+        break
+    }
   }
 }
 
@@ -129,6 +286,69 @@ const logout = () => {
 </script>
 
 <style scoped>
+/* 新增样式 */
+.herb-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.global-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 9998;
+}
+
+.herb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.herb-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.herb-content {
+  padding: 0 10px;
+}
+
+.herb-content h3 {
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.herb-describe {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.herb-word {
+  color: #888;
+  font-style: italic;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .herb-card {
+    flex-direction: column;
+  }
+
+  .herb-image {
+    max-height: 200px;
+  }
+}
+
+/* --------------------- */
 .header-container {
   position: relative;
   width: 100%;
