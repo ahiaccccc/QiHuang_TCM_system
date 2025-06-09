@@ -1,7 +1,7 @@
 package com.example.qihuangserver.controller;
 
 import com.example.qihuangserver.service.AdminCollectedService;
-import com.example.qihuangserver.dto.classics.AdminCollectedDTO;
+import com.example.qihuangserver.model.AdminCollectedDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/collected")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AdminCollectedController {
     private final AdminCollectedService adminCollectedService;

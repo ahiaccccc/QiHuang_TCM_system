@@ -1,7 +1,7 @@
 package com.example.qihuangserver.controller;
 
 
-import com.example.qihuangserver.dto.classics.AdminQaSessionDTO;
+import com.example.qihuangserver.model.AdminQaSessionDTO;
 import com.example.qihuangserver.service.AdminQaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/qa-sessions")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AdminQaController {
     private final AdminQaService adminQaService;

@@ -199,7 +199,7 @@ const goToBookPage = () => {
 
 const handleBookSubmit = async () => {
   if (editingBook.value) {
-    await bookStore.updateBook(editingBook.value, bookForm.value)
+    await bookStore.updateBook(editingBook.value.id, bookForm.value)
   } else {
     await bookStore.createBook(bookForm.value)
   }

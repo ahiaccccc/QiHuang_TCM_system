@@ -70,11 +70,7 @@ const onSendMessage = async () => {
             <div class="text-wrapper">对话列表</div>
           </div>
           <div class="frame-3">
-            <div
-              v-for="(conv, index) in conversations"
-              :key="index"
-              class="frame-2"
-            >
+            <div v-for="(conv, index) in conversations" :key="index" class="frame-2">
               <div class="vuesax-linear-2"></div>
               <div
                 class="text-wrapper-2"
@@ -83,29 +79,17 @@ const onSendMessage = async () => {
               >
                 {{ conv.title || '新对话' }}
               </div>
-              <div
-                class="group"
-                @click.stop="toggleDropdown(index)"
-              >
+              <div class="group" @click.stop="toggleDropdown(index)">
                 <div class="trash"></div>
                 <div class="vuesax-linear-edit"></div>
               </div>
-              <div
-                class="dropdown-menu"
-                v-if="activeDropdown === index"
-              >
-                <button
-                  class="dropdown-menu__item"
-                  @click="deleteConversation(index)"
-                >删除</button>
+              <div class="dropdown-menu" v-if="activeDropdown === index">
+                <button class="dropdown-menu__item" @click="deleteConversation(index)">删除</button>
               </div>
             </div>
           </div>
         </div>
-        <div
-          class="group-wrapper"
-          @click="newConversation"
-        >
+        <div class="group-wrapper" @click="newConversation">
           <div class="div-wrapper">
             <div class="text-wrapper-4">新建对话</div>
           </div>
@@ -121,15 +105,8 @@ const onSendMessage = async () => {
         <div class="xaioxizuo">
           <div class="ellipse-2"></div>
           <div class="frame-wrapper">
-            <div
-              v-for="(message, index) in messages"
-              :key="index"
-              class="frame-11"
-            >
-              <p
-                class="p"
-                :class="message.role"
-              >{{ message.content }}</p>
+            <div v-for="(message, index) in messages" :key="index" class="frame-11">
+              <p class="p" :class="message.role">{{ message.content }}</p>
             </div>
           </div>
         </div>
@@ -149,10 +126,7 @@ const onSendMessage = async () => {
           <div class="frame-13">
             <div class="text-wrapper-8">0/1000</div>
           </div>
-          <div
-            class="vuesax-linear-send-wrapper"
-            @click="onSendMessage"
-          >
+          <div class="vuesax-linear-send-wrapper" @click="onSendMessage">
             <div class="vuesax-linear-send"></div>
           </div>
         </div>
@@ -199,47 +173,47 @@ const onSendMessage = async () => {
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 export default {
   setup() {
-    const conversations = ref([])
-    const currentConversation = ref(null)
-    const messages = ref([])
-    const userInput = ref('')
-    const activeDropdown = ref(null)
+    const conversations = ref([]);
+    const currentConversation = ref(null);
+    const messages = ref([]);
+    const userInput = ref('');
+    const activeDropdown = ref(null);
 
     const selectConversation = (index) => {
-      currentConversation.value = index
+      currentConversation.value = index;
       // 加载对应对话的消息
-    }
+    };
 
     const toggleDropdown = (index) => {
-      activeDropdown.value = activeDropdown.value === index ? null : index
-    }
+      activeDropdown.value = activeDropdown.value === index ? null : index;
+    };
 
     const deleteConversation = (index) => {
-      conversations.value.splice(index, 1)
+      conversations.value.splice(index, 1);
       if (currentConversation.value === index) {
-        currentConversation.value = null
-        messages.value = []
+        currentConversation.value = null;
+        messages.value = [];
       }
-      activeDropdown.value = null
-    }
+      activeDropdown.value = null;
+    };
 
     const newConversation = () => {
-      conversations.value.push({ title: '新对话', messages: [] })
-      currentConversation.value = conversations.value.length - 1
-      messages.value = []
-    }
+      conversations.value.push({ title: '新对话', messages: [] });
+      currentConversation.value = conversations.value.length - 1;
+      messages.value = [];
+    };
 
     const onSendMessage = async () => {
-      if (!userInput.value.trim()) return
+      if (!userInput.value.trim()) return;
 
-      messages.value.push({ role: 'user', content: userInput.value })
+      messages.value.push({ role: "user", content: userInput.value });
       // 这里添加发送消息的逻辑
-      userInput.value = ''
-    }
+      userInput.value = '';
+    };
 
     return {
       conversations,
@@ -251,14 +225,14 @@ export default {
       toggleDropdown,
       deleteConversation,
       newConversation,
-      onSendMessage,
-    }
-  },
-}
+      onSendMessage
+    };
+  }
+};
 </script>
 
 <style scoped>
-@import '@/assets/style/talk.css';
+@import "@/assets/style/talk.css";
 
 /* 添加一些额外的样式来适配Vue组件 */
 .user-input {
@@ -277,7 +251,7 @@ export default {
   top: 30px;
   background: white;
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   z-index: 10;
 }
 

@@ -1,7 +1,5 @@
 package com.example.qihuangserver.controller;
 
-import com.example.qihuangserver.dto.classics.CollectedDTO;
-import com.example.qihuangserver.model.Book;
 import com.example.qihuangserver.model.Classic;
 import com.example.qihuangserver.model.Collected;
 import com.example.qihuangserver.model.User;
@@ -11,11 +9,9 @@ import com.example.qihuangserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/collected")
-@CrossOrigin(origins = "*")
 public class CollectedController {
     private final CollectedService collectedService;
     private final UserService userService;
@@ -39,26 +35,13 @@ public class CollectedController {
         collectedService.toggleCollected(userId, classicId, title);
     }
 
-    
     @GetMapping("/list")
-    public List<CollectedDTO> getUserCollections(@RequestParam Long userId) {
-        List<Collected> collections = collectedService.getUserCollections(userService.getUserById(userId));
-
-        return collections.stream().map(collected -> {
-            CollectedDTO dto = new CollectedDTO();
-            dto.setCollectedId(collected.getId());
-            dto.setTitle(collected.getTitle());
-
-            Classic classic = collected.getClassic();
-            dto.setClassicId(classic.getId());
-
-            Book book = classic.getBook();
-            dto.setBookId(book.getId());
-            dto.setBookName(book.getName()); // 假设Book有title字段
-
-            dto.setUserId(userId);
-            return dto;
-        }).collect(Collectors.toList());
+    public List<Collected> getUserCollections(@RequestParam Long userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在！");
+        }
+        return collectedService.getUserCollections(user);
     }
 
 }
