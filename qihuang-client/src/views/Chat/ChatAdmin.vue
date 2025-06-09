@@ -1,4 +1,4 @@
-<!-- AdminConversations.vue -->
+
 <template>
   <div class="admin-conversations">
     <div class="header">
@@ -246,12 +246,7 @@ fetchConversations();
 </script>
 
 <style scoped>
-.admin-conversations {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+
 
 .header {
   display: flex;
@@ -303,25 +298,73 @@ h1 {
   background-color: #f9f9f9;
   border-radius: 4px;
 }
+/* 全屏背景设置 */
+.admin-conversations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 20px;
+  background-image: url('@/assets/images/back.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* 内容容器（保持1200px最大宽度但全屏背景） */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 调整各区块样式 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
 
 .conversation-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
 }
 
+/* 卡片样式增强 */
 .conversation-card {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
 }
 
 .conversation-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
+
+
 
 .conversation-header {
   background-color: #f5f5f5;
@@ -418,7 +461,9 @@ h1 {
 
 .dialog-content {
   position: relative;
-  background-color: white;
+
+  background-color: rgba(255, 255, 255, 0.95);
+
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 80%;
@@ -612,4 +657,49 @@ h1 {
 .reset-btn:hover {
   background-color: #e0e0e0;
 }
+.admin-conversations {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* 背景设置 */
+  background-image: url('@/assets/images/back.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* 内容容器调整为全宽 */
+.header,
+.search-bar,
+.conversation-list,
+.empty-state,
+.error-message {
+  max-width: 1200px;
+  margin: 0 auto 15px auto;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* 对话列表调整为全宽 */
+.conversation-list {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 确保对话框也能全屏显示 */
+.messages-dialog .dialog-content,
+.confirm-dialog .dialog-content {
+  width: 90%;
+  max-width: 1000px;
+}
+
+
+
+
+
+
 </style>
