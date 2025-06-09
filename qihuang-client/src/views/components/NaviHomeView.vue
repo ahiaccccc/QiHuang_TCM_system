@@ -37,6 +37,14 @@
         >
           答题挑战
         </div>
+        <div
+          v-if="$props.nickname !== 'admin'"
+          class="nav-item"
+          :class="{ active: currentRoute === 'recomand' }"
+          @click="navigateTo('recomand')"
+        >
+          养生专题
+        </div>
       </div>
 
       <div class="right-column">
@@ -58,6 +66,7 @@
               class="dropdown-item"
               @click.stop="showDailyCard"
             >每日卡片</div>
+
             <div
               class="dropdown-item"
               @click.stop="logout"
@@ -263,6 +272,9 @@ const navigateTo = (route) => {
         break
       case 'quiz':
         router.push('/quiz-select')
+        break
+      case 'recomand':
+        router.push('/recomand')
         break
     }
   }

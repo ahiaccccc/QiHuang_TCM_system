@@ -20,11 +20,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-<<<<<<< HEAD
-        additionalData: '@import "@/assets/style/mixin.scss";',
-=======
         additionalData: '@use "@/assets/style/mixin.scss";',
->>>>>>> parent of 2c74f9e (Merge branch 'main' of https://github.com/ahiaccccc/QiHuang_TCM_system)
       },
     },
   },

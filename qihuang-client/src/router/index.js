@@ -160,6 +160,11 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Classic/AdminQA.vue'),
     },
+    {
+      path: '/recomand',
+      name: 'recomand',
+      component: () => import('../views/Recomand/RecomandView.vue'),
+    }
   ],
 })
 
