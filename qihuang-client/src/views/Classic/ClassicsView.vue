@@ -9,21 +9,16 @@
           </div>
 
           <div class="frame-wrapper-right">
-            <button
-              @click="$router.push('/books')"
-              class="text-wrapper-3"
-            >返回</button>
+            <button @click="$router.push('/books')" class="text-wrapper-3">返回</button>
           </div>
         </div>
 
+
         <div class="div-wrapper">
           <div class="frame-2">
-            <div
-              v-for="classic in classics"
-              :key="classic.id"
-              class="classic-item"
-              @click="goToDetail(classic.id)"
-            >
+             <div v-for="classic in classics" :key="classic.id" 
+       class="classic-item" 
+       @click="goToDetail(classic.id)">
               <div class="classic-info">
                 <div class="text-wrapper-6">{{ classic.title }}</div>
                 <!-- <div class="text-wrapper-8">{{ classic.summary }}</div> -->
@@ -33,11 +28,7 @@
           <!-- 修改后的分页组件 -->
           <div class="pagination-list">
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="prevPage"
-                :disabled="page === 1"
-              >‹</div>
+              <div class="text-wrapper-9" @click="prevPage" :disabled="page === 1">‹</div>
             </div>
             <div class="element-wrapper">
               <div class="element">{{ page }}</div>
@@ -47,26 +38,18 @@
               <div class="element">{{ classicStore.totalPages }}</div>
             </div>
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="nextPage"
-                :disabled="page === classicStore.totalPages"
-              >›</div>
+              <div class="text-wrapper-9" @click="nextPage" :disabled="page === classicStore.totalPages">›</div>
             </div>
             <div class="pagination-input">
-              <input
-                type="number"
-                v-model.number="inputPage"
-                min="1"
-                :max="classicStore.totalPages"
-                @keyup.enter="goToPage"
-                placeholder="页码"
-              />
+              <input type="number" v-model.number="inputPage" min="1" :max="classicStore.totalPages"
+                @keyup.enter="goToPage" placeholder="页码" />
               <button @click="goToPage">跳转</button>
             </div>
           </div>
 
+
         </div>
+
 
       </div>
     </div>
@@ -97,7 +80,7 @@ const loadData = async () => {
     await bookStore.getBookById(route.params.bookId)
     await classicStore.loadClassics(route.params.bookId, {
       page: page.value - 1,
-      size: pageSize,
+      size: pageSize
     })
     // 加载后更新输入框值为当前页
     inputPage.value = page.value
@@ -109,15 +92,16 @@ const loadData = async () => {
 onMounted(loadData)
 watch(() => route.params.bookId, loadData)
 
-const classics = computed(() => classicStore.classics)
+ const classics = computed(() => classicStore.classics)
+
 
 const goToDetail = (classicId) => {
-  router.push({
-    name: 'ClassicDetail',
-    params: {
-      bookId: route.params.bookId, // 传递真实的bookId
-      classicId: classicId,
-    },
+  router.push({ 
+    name: 'ClassicDetail', 
+    params: { 
+      bookId: route.params.bookId,  // 传递真实的bookId
+      classicId: classicId
+    }
   })
 }
 
@@ -149,7 +133,7 @@ const loadBook = async () => {
 const loadClassics = async () => {
   await classicStore.loadClassics(bookId, {
     page: page.value - 1,
-    size: pageSize,
+    size: pageSize
   })
 }
 
@@ -225,7 +209,7 @@ watch(page, loadClassics)
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 0 auto 20px;
+  margin:0 auto 20px;
 }
 
 .pagination-input {

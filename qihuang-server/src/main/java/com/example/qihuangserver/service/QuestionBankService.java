@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.qihuangserver.dto.question.QuestionBankDTO;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuestionBankService {
@@ -54,15 +54,10 @@ public class QuestionBankService {
                     System.err.println("无法将 " + idStr + " 转换为整数: " + e.getMessage());
                 }
             }
-            List<QuestionBankDTO> result = questionBankRepository.findByIds(idList);
-        // 创建ID到DTO的映射
-            Map<Integer, QuestionBankDTO> idToDto = result.stream()
-                .collect(Collectors.toMap(QuestionBankDTO::getId, Function.identity()));
-        return idList.stream()
-                .map(idToDto::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
+            List<QuestionBankDTO> questionList = questionBankRepository.findByIds(idList);
+            return questionList;
+//        }
+//        return new ArrayList<>();
     }
 
 

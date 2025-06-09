@@ -2,17 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as api from '@/apis/qa-apis'
 import { EventSourcePolyfill } from 'event-source-polyfill'
-import { getProfileAPI, updateProfileAPI, uploadAvatarAPI } from '@/apis/user'
-// const userStore = useUserStore()
-// const userId = userStore.userInfo?.userId || null
 
 export const useQAClassicStore = defineStore('qaclassic', () => {
-    const profile = ref({
-    username: '',
-    userId: '',
-    email: '',
-    avatar: '',
-    })  
     // State
     const classic = ref({})
     const sessions = ref([])
@@ -26,25 +17,12 @@ export const useQAClassicStore = defineStore('qaclassic', () => {
     const renamingTitle = ref('')
     const bookid = ref(0)
 
-    const loadProfile = async () => {
-  try {
-    const response = await getProfileAPI()
-    if (response.code === 200) {
-      profile.value = response.data
-    
-    }
-  } catch (error) {
-    console.error('加载个人信息失败:', error)
-  }
-}
     // Actions
     const fetchClassic = async (id) => {
         classic.value = await api.getClassic(id)
     }
 
-    const fetchSessions = async (classicId, userId) => {
-        await loadProfile() // 确保在获取会话前加载用户信息
-        userId = profile.value.userId || null
+    const fetchSessions = async (classicId, userId = 1) => {
         sessions.value = await api.getSessions(classicId, userId)
     }
 
@@ -84,19 +62,18 @@ const sendMessage = async (classicId) => {
             createdAt: new Date().toISOString()
         };
         currentMessages.value.push(tempUserMsg);
-        const userId = profile.value.userId || null;
+        
         let sessionId = currentSessionId.value;
         if (!sessionId) {
-            const session = await api.createSession(classicId, userId, userContent);
+            const session = await api.createSession(classicId, 1, userContent);
             sessionId = session.id;
             currentSessionId.value = sessionId;
             await fetchSessions(classicId);
         }
 
-        const token = localStorage.getItem('token')
         const response = await fetch(`/api/qa/stream-messages`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, content: userContent, role: 'user', parentId: null })
         });
 
@@ -220,10 +197,9 @@ const editMessage = async (messageId, newContent) => {
             createdAt: new Date().toISOString()
         });
         console.log('编辑消息:', messageId, newContent);
-        const token = localStorage.getItem('token')
         const response = await fetch(`/api/qa/stream-edit`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messageId, newContent })
         });
 
@@ -317,10 +293,9 @@ const regenerate = async (messageId) => {
         currentMessages.value[originalMsgIndex].streaming = true;
         currentMessages.value[originalMsgIndex].error = false;
 
-        const token = localStorage.getItem('token')
         const response = await fetch(`/api/qa/stream-regenerate`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messageId })
         });
 
@@ -410,6 +385,20 @@ const regenerate = async (messageId) => {
         renamingSession.value = null
         renamingTitle.value = ''
     }
+
+    // 在消息处理逻辑中添加内容解析
+// 内容解析函数（保留 think 标签逻辑）
+// const processAiResponse = (rawContent) => {
+//     let thinkContent = '';
+//     const finalContent = rawContent
+//         .replace(/<think>([\s\S]*?)<\/think>/g, (match, p1) => {
+//             thinkContent = "<think>"+p1.trim()+"</think>";
+//             return '';
+//         })
+//         .trim();
+//     return { thinkContent, finalContent };
+// };
+
 
     return {
         // State

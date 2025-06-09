@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -20,8 +21,16 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: '@use "@/assets/style/mixin.scss";',
+        additionalData: '@import "@/assets/styles/mixin.scss";',
       },
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      }
+    }
+  }
 })

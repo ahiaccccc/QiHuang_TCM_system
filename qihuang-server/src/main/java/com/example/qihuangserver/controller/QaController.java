@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/qa")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class QaController {
     private final QaService qaService;
 
@@ -53,7 +52,7 @@ public class QaController {
     public SseEmitter streamMessage(
             @RequestBody MessageRequest request
     ) {
-        SseEmitter emitter = new SseEmitter(100_000L);
+        SseEmitter emitter = new SseEmitter(60_000L);
         qaService.streamResponse(
                 request.sessionId(),
                 request.content(),
@@ -134,7 +133,7 @@ public class QaController {
     // 重新生成流式
     @PostMapping(value = "/stream-regenerate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamRegenerate(@RequestBody RegenerateRequest request) {
-        SseEmitter emitter = new SseEmitter(100_000L);
+        SseEmitter emitter = new SseEmitter(60_000L);
         qaService.streamRegenerateResponse(request.messageId(), emitter);
         return emitter;
     }
@@ -144,7 +143,7 @@ public class QaController {
     // 流式修改问题回复
     @PostMapping(value = "/stream-edit", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamEditMessage(@RequestBody StreamEditRequest request) {
-        SseEmitter emitter = new SseEmitter(100_000L);
+        SseEmitter emitter = new SseEmitter(60_000L);
         qaService.streamEditResponse(
                 request.messageId(),
                 request.newContent(),

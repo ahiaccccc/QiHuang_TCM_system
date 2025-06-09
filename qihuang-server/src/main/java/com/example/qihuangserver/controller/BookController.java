@@ -2,7 +2,7 @@ package com.example.qihuangserver.controller;
 
 import com.example.qihuangserver.model.Book;
 import com.example.qihuangserver.model.Classic;
-import com.example.qihuangserver.dto.classics.PageDTO;
+import com.example.qihuangserver.model.PageDTO;
 import com.example.qihuangserver.service.BookService;
 import com.example.qihuangserver.service.ClassicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "*")
 public class BookController {
     @Autowired
     private BookService bookService;
@@ -86,7 +85,7 @@ public class BookController {
 
     @PutMapping("/{id}")
     public Book updateBook(@PathVariable Integer id, @RequestBody Book book) {
-        book.setId(Long.valueOf(id));
+        book.setId(id);
         return bookService.saveBook(book);
     }
 

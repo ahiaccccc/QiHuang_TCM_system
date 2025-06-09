@@ -1,27 +1,23 @@
 package com.example.qihuangserver.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users", schema = "qihuangdb")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
-    private long userId;
+    private Long id;
 
     @Column(name = "username", nullable = false, length = 50)
     private String username;
@@ -37,13 +33,6 @@ public class User {
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
-    @CreationTimestamp
     private Instant createdAt;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Collected> collecteds = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<Conversation> conversations = new LinkedHashSet<>();
 
 }

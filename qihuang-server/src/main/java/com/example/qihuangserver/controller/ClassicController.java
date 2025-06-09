@@ -1,7 +1,8 @@
 package com.example.qihuangserver.controller;
 
 import com.example.qihuangserver.model.Classic;
-import com.example.qihuangserver.dto.classics.PageDTO;
+import com.example.qihuangserver.model.ClassicSimpleDTO;
+import com.example.qihuangserver.model.PageDTO;
 import com.example.qihuangserver.service.ClassicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/classics")
-@CrossOrigin(origins = "*")
 public class ClassicController {
     @Autowired
     private ClassicService classicService;
