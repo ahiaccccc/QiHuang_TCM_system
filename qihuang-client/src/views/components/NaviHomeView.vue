@@ -31,6 +31,14 @@
           典籍解读
         </div>
         <div
+            v-if="$props.nickname == 'admin'"
+          class="nav-item"
+          :class="{ active: currentRoute === 'admin-QA' }"
+          @click="navigateTo('admin-QA')"
+        >
+          用户典籍管理
+        </div>
+        <div
           class="nav-item"
           :class="{ active: currentRoute === 'quiz' }"
           @click="navigateTo('quiz')"
@@ -260,6 +268,9 @@ const navigateTo = (route) => {
         break
       case 'quiz':
         router.push('/quiz-select-admin') // 管理员答题管理页面
+        break
+        case 'admin-QA':
+        router.push('/admin-QA') // 管理员答题管理页面
         break
     }
   } else {

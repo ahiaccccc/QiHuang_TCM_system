@@ -226,10 +226,12 @@ import { useCollectedStore } from '@/stores/classic'
 import SelectionIcon from '@/views/Classic/SelectionIcon.vue' 
 import Navi from '../components/NaviHomeView2.vue'
 import { getProfileAPI } from '@/apis/user'
+import { useMessage } from 'naive-ui'
 
 const route = useRoute()
 const router = useRouter()
 const qastore = useQAClassicStore()
+const message = useMessage()
 const { classic, currentMessages, newMessage, quote, sending, loadingMessage } = storeToRefs(qastore)
 
 // 定义 profile 变量
@@ -431,7 +433,11 @@ const onAskSelection = (question) => {
 // 发送、重生、评分
 const sendMessage = (id) => qastore.sendMessage(id)
 const regenerate = (id) => qastore.regenerate(id)
-const rate = (id, feedback) => qastore.rate(id, feedback)
+
+const rate = (id, feedback) => {
+  qastore.rate(id, feedback)
+  message.success(`感谢您的反馈！已标记为 ${feedback === 'good' ? '好评' : '差评'}`)
+}
 
 // 删除消息
 const deleteMsg = (id) => {
