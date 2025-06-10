@@ -73,7 +73,7 @@ export function sendFeedback(messageId, feedback) {
   return request({
     url: '/qa/feedback',
     method: 'POST',
-    data:  { messageId, feedback }
+    params: { messageId, feedback }
   })
 }
 
