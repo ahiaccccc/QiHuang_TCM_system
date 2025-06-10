@@ -92,7 +92,7 @@
             />
           </div>
         </div>
-        <!-- <div class="card-wrapper-3">
+        <div class="card-wrapper-3">
           <div class="card-item-3">
             <div class="logo-wrapper">
               <div class="element-humana-logo-RGB-wrapper">
@@ -119,7 +119,7 @@
             class="card-circle-3"
             src="https://c.animaapp.com/mbp1e89xyPt5yw/img/card-circle-1.svg"
           />
-        </div> -->
+        </div>
         <div
           class="card-wrapper-4"
           :style="{ 'animation-delay': '0.2s' }"
@@ -334,8 +334,9 @@ a {
   height: 509px;
   padding: 84.38px 0px 0px;
   position: absolute;
-  top: 194px;
-  left: 179px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -348,9 +349,9 @@ a {
   gap: 103px;
   padding: 0px 16.15px;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
   margin-top: -12.69px;
   margin-bottom: -12.69px;
   display: flex;

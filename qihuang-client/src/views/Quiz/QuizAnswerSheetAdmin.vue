@@ -162,11 +162,9 @@
                 </n-popconfirm>
 
                 <n-upload
-                  action="http://localhost:8080/api/upload"
-                  :headers="{
-                    'Authorization': 'Bearer ' + token
-                  }"
-                  @finish="handleUploadFinish"
+                  accept=".json"
+                  :show-file-list="false"
+                  @change="handleFileChange"
                 >
                   <n-button
                     type="primary"
@@ -308,27 +306,39 @@ const goToQuestion = (index) => {
   editingOptionIndex.value = -1
 }
 
-const handleUploadFinish = ({ file, event }) => {
-  console.log('上传完成:', file, event)
+const handleFileChange = async (data) => {
+  const file = data.file?.file
+  if (!file) return
 
-  const newQuestions = [
-    {
-      id: Date.now() + 1,
-      question: '上传的题目1',
-      options: '选项A\\n选项B\\n选项C\\n选项D',
-      correctAnswer: 'A',
-    },
-    {
-      id: Date.now() + 2,
-      question: '上传的题目2',
-      options: '选项A\\n选项B\\n选项C\\n选项D',
-      correctAnswer: 'B',
-    },
-  ]
-  questions.value.push(...newQuestions)
-  setTimeout(() => {
-    message.success('批量导入成功', { duration: 2000 })
-  }, 1000)
+  try {
+    // 读取文件内容
+    const content = await readFileAsText(file)
+    // 解析JSON数据
+    const importedQuestions = JSON.parse(content)
+
+    // 验证数据格式
+    if (!Array.isArray(importedQuestions)) {
+      throw new Error('文件格式不正确，应该是一个数组')
+    }
+
+    // 合并到现有问题中
+    questions.value = [...questions.value, ...importedQuestions]
+
+    message.success(`成功导入 ${importedQuestions.length} 道题目`)
+  } catch (error) {
+    console.error('导入失败:', error)
+    message.error(`导入失败: ${error.message}`)
+  }
+}
+
+// 辅助函数：读取文件为文本
+const readFileAsText = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (event) => resolve(event.target.result)
+    reader.onerror = (error) => reject(error)
+    reader.readAsText(file)
+  })
 }
 
 onMounted(async () => {

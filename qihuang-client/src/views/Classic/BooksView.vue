@@ -1,6 +1,9 @@
 <template>
   <div class="classics">
-    <Navi />
+         <Navi
+    :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+    :nickname="profile.username"
+  />
     <div class="hero-section">
       <div class="main-area">
         <div class="main-area-header">
@@ -10,11 +13,7 @@
 
           <!-- <div class="tabs" style="position: absolute; top: 20px; right: 150px;"> -->
           <div class="tabs">
-            <input
-              v-model="searchQuery"
-              placeholder="搜索书名、作者或朝代"
-              class="search-input text-wrapper-14"
-              style="
+            <input v-model="searchQuery" placeholder="搜索书名、作者或朝代" class="search-input text-wrapper-14" style="
               margin-right: 20px;
               padding: 8px 16px;
               border: 2px solid var(--huilan);
@@ -22,8 +21,7 @@
               background-color: var(--grayswhite);
               transition: all 0.3s ease;
               width: 270px;
-            "
-            />
+            " />
           </div>
 
           <!-- <button class="button-blue text-wrapper-15" @click="$router.push('/admin-classics')">
@@ -33,12 +31,7 @@
 
         <div class="div-wrapper">
           <div class="frame-2">
-            <div
-              v-for="book in books"
-              :key="book.id"
-              class="book-item"
-              @click="goToBook(book.id)"
-            >
+            <div v-for="book in books" :key="book.id" class="book-item" @click="goToBook(book.id)">
               <div class="book-info">
                 <div class="text-wrapper-6">{{ book.name }}</div>
                 <div class="text-wrapper-7">{{ book.author }}</div>
@@ -48,11 +41,7 @@
           </div>
           <div class="pagination-list">
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="prevPage"
-                :disabled="page === 1"
-              >‹</div>
+              <div class="text-wrapper-9" @click="prevPage" :disabled="page === 1">‹</div>
             </div>
             <div class="element-wrapper">
               <div class="element">{{ page }}</div>
@@ -62,21 +51,11 @@
               <div class="element">{{ store.totalPages }}</div>
             </div>
             <div class="pagination-page">
-              <div
-                class="text-wrapper-9"
-                @click="nextPage"
-                :disabled="page === store.totalPages"
-              >›</div>
+              <div class="text-wrapper-9" @click="nextPage" :disabled="page === store.totalPages">›</div>
             </div>
             <div class="pagination-input">
-              <input
-                type="number"
-                v-model.number="inputPage"
-                min="1"
-                :max="store.totalPages"
-                @keyup.enter="goToPage"
-                placeholder="页码"
-              />
+              <input type="number" v-model.number="inputPage" min="1" :max="store.totalPages" @keyup.enter="goToPage"
+                placeholder="页码" />
               <button @click="goToPage">跳转</button>
             </div>
           </div>
@@ -91,11 +70,12 @@
 
 <script setup>
 import '@/assets/book.css'
-import Navi from '../components/NaviHomeView.vue'
+import Navi from '../components/NaviHomeView2.vue'
 
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/book'
+import { getProfileAPI } from '@/apis/user'
 
 const router = useRouter()
 const store = useBookStore()
@@ -104,6 +84,37 @@ const page = ref(1)
 const pageSize = 12
 const searchQuery = ref('')
 const inputPage = ref(1) // 新增：用于输入跳转的页码
+
+const profile = ref({
+  username: '',
+  userId: '',
+  email: '',
+  avatar: '',
+})
+
+  const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
+const defaultAvatar = ref('@/assets/images/logo.png')
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
+onMounted(() => {
+    profile.value = {
+    username: '',
+    userId: '',
+    email: '',
+    avatar: '',
+  }
+  loadProfile()
+})
 
 const books = computed(() => store.books)
 
@@ -140,19 +151,19 @@ const fetchBooks = async () => {
       size: pageSize,
       name: searchQuery.value,
       author: searchQuery.value,
-      dynasty: searchQuery.value,
-    })
+      dynasty: searchQuery.value
+    });
     // console.log("书籍数据加载成功", store.books);
-
+    
     // 添加数据验证
     if (!Array.isArray(store.books)) {
-      console.error('API返回数据格式错误', store.books)
-      store.books = [] // 防止渲染错误
+      console.error("API返回数据格式错误", store.books);
+      store.books = []; // 防止渲染错误
     }
-
-    inputPage.value = page.value
+    
+    inputPage.value = page.value;
   } catch (error) {
-    console.error('加载书籍失败:', error)
+    console.error("加载书籍失败:", error);
   } finally {
     // store.setLoading(false);
   }
@@ -164,24 +175,22 @@ watch([searchQuery, page], fetchBooks)
 
 <style scoped>
 .book-item {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 10px;
+  background: #fff;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  transition: all 0.4s cubic-bezier(0.75, 0.885, 0.32, 1.275);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
   position: relative;
   height: 130px;
   width: 100%;
   display: flex;
   flex-direction: column;
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
 }
 
-.book-item:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-}
-
+/* 山水顶边 - 青绿渐变 */
 .book-item::before {
   content: '';
   position: absolute;
@@ -189,7 +198,49 @@ watch([searchQuery, page], fetchBooks)
   left: 0;
   right: 0;
   height: 10px;
-  background: linear-gradient(90deg, #1da1a6b6, #e2fac4, #169772, #a1c4fd);
+  background: linear-gradient(90deg, 
+    #b3e5fc 0%, 
+    #c8e6c9 30%, 
+    #dcedc8 50%, 
+    #c8e6c9 70%, 
+    #b3e5fc 100%
+  );
+}
+
+/* 远山层 - 淡彩山峦 */
+.book-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: 
+    radial-gradient(circle at 20% 60%, #e1f5fe 0%, transparent 50%),
+    radial-gradient(circle at 50% 40%, #dcedc8 0%, transparent 50%),
+    radial-gradient(circle at 80% 60%, #e1f5fe 0%, transparent 50%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 文字容器 - 避免被背景遮挡 */
+.book-item > div {
+  position: relative;
+  z-index: 2;
+  padding: 16px;
+}
+
+.book-item:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(180,220,180,0.2);
+  /* hover时增强山水层亮度 */
+  .book-item::after {
+    opacity: 0.8;
+    background: 
+      radial-gradient(circle at 20% 60%, #e8f8ff 0%, transparent 50%),
+      radial-gradient(circle at 50% 40%, #e8f7d8 0%, transparent 50%),
+      radial-gradient(circle at 80% 60%, #e8f8ff 0%, transparent 50%);
+  }
 }
 
 .book-info {
@@ -239,7 +290,7 @@ watch([searchQuery, page], fetchBooks)
   justify-content: center;
   gap: 10px;
   /* margin-top: 30px; */
-  margin: 0 auto;
+  margin:0 auto;
 }
 
 .pagination-input {

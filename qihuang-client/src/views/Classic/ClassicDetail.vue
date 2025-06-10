@@ -1,59 +1,46 @@
 <template>
-  <Navi />
+    <Navi
+    :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+    :nickname="profile.username"
+  />
   <div class="classic-container">
-
+    
     <!-- 典籍内容展示区域 -->
-    <div
-      class="content-area"
+     <div 
+      class="content-area" 
       @mouseup="onSelect"
       :style="{ width: leftWidth + 'px' }"
     >
       <div class="book-header">
         <h1>{{ classic==null?'':classic.title }}</h1>
-        <button
-          @click="goBackToClassics"
-          class="back-button"
-        >
-          <i class="fas fa-book"></i> 返回目录
-        </button>
-        <button
-          @click="toggleCollected"
-          class="star-button"
-        >
-          <span :class="{ collected: isCollected }">★</span>
-        </button>
+      <button @click="goBackToClassics" class="function-button">
+      返回目录
+    </button>
+        <button @click="toggleCollected" class="star-button">
+  <span :class="{ collected: isCollected }">★</span>
+</button>
       </div>
       <div class="text-section">
         <h3>原文</h3>
         <div class="original-text">{{ classic==null?'':classic.originalText }}</div>
-        <h3>白话文</h3>
-        <div class="translated-text">{{ classic==null?'':classic.vernacularText }}</div>
-        <h3>英文翻译</h3>
-        <div class="notes-text">{{ classic==null?'':classic.translateText }}</div>
       </div>
     </div>
 
-    <div
+    <div 
       class="resize-handle"
       @mousedown="startResize"
     ></div>
     <!-- 主聊天区域 -->
-    <div
+    <div 
       class="main-chat-container"
       :style="{ width: `calc(100% - ${leftWidth + 5}px)` }"
     >
       <!-- 功能按钮栏 -->
       <div class="function-bar">
-        <button
-          class="function-button"
-          @click="showHistory = !showHistory"
-        >
+        <button class="function-button" @click="showHistory = !showHistory">
           <i class="fas fa-history"></i> 历史对话
         </button>
-        <button
-          class="new-chat-button"
-          @click="qastore.startNewSession()"
-        >
+        <button class="new-chat-button" @click="qastore.startNewSession()">
           <i class="fas fa-comment-plus"></i> 新建对话
         </button>
       </div>
@@ -61,9 +48,9 @@
       <!-- 聊天区域 -->
       <div class="chat-area">
         <div
-          v-for="msg in currentMessages"
-          :key="msg.id"
-          :class="[
+  v-for="msg in currentMessages"
+  :key="msg.id"
+  :class="[
     'message', 
     msg.role, 
     { 
@@ -71,204 +58,155 @@
       error: msg.error
     }
   ]"
-        >
+>
           <div class="message-header">
-            <span class="role-tag">
-              {{ msg.role === 'user' ? '你' : 'AI' }}
-              <span
-                v-if="msg.streaming"
-                class="streaming-indicator"
-              ></span>
-            </span>
-            <div
-              class="message-actions"
-              v-if="msg.role === 'user'"
-            >
-              <button
-                class="copy-btn"
-                @click="copyMessage(msg.content)"
-              >⎘</button>
-              <button
-                class="edit-btn"
-                @click="startEdit(msg.id, msg.content)"
-              >✎</button>
-              <button
-                class="delete-btn"
-                @click="deleteMsg(msg.id)"
-              >×</button>
+             <span class="role-tag">
+      {{ msg.role === 'user' ? '你' : 'AI' }}
+      <span v-if="msg.streaming" class="streaming-indicator"></span>
+    </span>
+            <div class="message-actions" v-if="msg.role === 'user'">
+              <button class="copy-btn" @click="copyMessage(msg.content)">⎘</button>
+              <button class="edit-btn" @click="startEdit(msg.id, msg.content)">✎</button>
+              <button class="delete-btn" @click="deleteMsg(msg.id)">×</button>
             </div>
           </div>
           <div class="message-content">
             <template v-if="editingStates[msg.id]?.editing">
-              <div class="edit-wrapper">
-                <textarea
-                  ref="editInput"
-                  v-model="editingStates[msg.id].editedContent"
-                  @keydown.enter.exact.prevent="handleEditEnter(msg.id)"
-                  @keyup.esc="cancelEdit(msg.id)"
-                  class="edit-textarea"
-                  :style="{ height: editingTextareaHeight + 'px' }"
-                ></textarea>
-
-                <div class="edit-controls">
-                  <button
-                    @click="saveEdit(msg.id)"
-                    :disabled="isSavingEdit"
-                    class="btn-save"
-                  >
-                    <span v-if="isSavingEdit">
-                      <i class="loading-icon"></i> 生成中...
-                    </span>
-                    <span v-else>保存并重新生成 🔄</span>
-                  </button>
-                  <button
-                    @click="cancelEdit(msg.id)"
-                    class="btn-cancel"
-                  >
-                    取消 ✖
-                  </button>
-                </div>
-              </div>
-            </template>
-            <template v-else>
-              <!-- 解析think内容 -->
-              <div
-                v-if="hasThinkContent(msg.content)"
-                class="think-container"
-              >
-                <div
-                  class="think-toggle"
-                  @click="toggleThink(msg.id)"
-                >
-                  {{ showThink[msg.id] ? '▲ 隐藏思考过程' : '▼ 显示AI思考过程' }}
-                </div>
-                <div
-                  v-if="showThink[msg.id]"
-                  class="think-content"
-                  v-html="formatThinkContent(msg.content)"
-                ></div>
-              </div>
-
-              <!-- 显示正式回答 -->
-              <div class="ai-answer">
-                {{ extractFinalAnswer(msg.content) }}
-              </div>
-            </template>
-          </div>
-          <div
-            v-if="msg.role === 'assistant'"
-            class="message-footer"
+      <div class="edit-wrapper">
+        <textarea
+          ref="editInput"
+          v-model="editingStates[msg.id].editedContent"
+          @keydown.enter.exact.prevent="handleEditEnter(msg.id)"
+          @keyup.esc="cancelEdit(msg.id)"
+          class="edit-textarea"
+          :style="{ height: editingTextareaHeight + 'px' }"
+        ></textarea>
+        
+        <div class="edit-controls">
+          <button 
+            @click="saveEdit(msg.id)" 
+            :disabled="isSavingEdit"
+            class="btn-save"
           >
+            <span v-if="isSavingEdit">
+              <i class="loading-icon"></i> 生成中...
+            </span>
+            <span v-else>保存并重新生成 🔄</span>
+          </button>
+          <button 
+            @click="cancelEdit(msg.id)"
+            class="btn-cancel"
+          >
+            取消 ✖
+          </button>
+        </div>
+      </div>
+    </template>
+<template v-else>
+    <!-- 解析think内容 -->
+ <div v-if="hasThinkContent(msg.content)" class="think-container">
+      <div 
+        class="think-toggle"
+        @click="toggleThink(msg.id)"
+      >
+        {{ showThink[msg.id] ? '▲ 隐藏思考过程' : '▼ 显示AI思考过程' }}
+      </div>
+      <div 
+        v-if="showThink[msg.id]"
+        class="think-content"
+        v-html="formatThinkContent(msg.content)"
+      ></div>
+    </div>
+    
+    <!-- 显示正式回答 -->
+    <div class="ai-answer">
+      {{ extractFinalAnswer(msg.content) }}
+    </div>
+  </template>
+          </div>
+          <div v-if="msg.role === 'assistant'" class="message-footer">
             <button @click="copyMessage(msg.content)">⎘ 复制</button>
             <button @click="rate(msg.id, 'good')">👍</button>
             <button @click="rate(msg.id, 'bad')">👎</button>
-            <button
-              @click="regenerate(msg.id)"
-              :disabled="loadingMessage[msg.id] || msg.streaming"
-            >
-              重新生成
-            </button>
+            <button 
+  @click="regenerate(msg.id)" 
+  :disabled="loadingMessage[msg.id] || msg.streaming">
+  重新生成
+</button>
           </div>
         </div>
       </div>
 
-      <div class="input-area">
+   <div class="input-area">
         <textarea
           v-model="newMessage"
           @keyup.enter.prevent="sendMessage(classicId)"
           :placeholder="quote || '请输入问题...'"
         ></textarea>
-        <button
-          @click="sendMessage(classicId)"
-          :disabled="sending"
-        >发送</button>
+        <button @click="sendMessage(classicId)" :disabled="sending">发送</button>
       </div>
     </div>
 
-    <!-- 历史对话弹窗 -->
+   <!-- 历史对话弹窗 -->
+<div v-if="showHistory" class="history-dialog">
+  <div class="history-header">
+    <h3>聊天历史 ({{ qastore.sessions.length }})</h3>
+    <button @click="showHistory = false">×</button>
+  </div>
+  <div class="history-tabs">
+    <span :class="{ active: historyTab === 'all' }" @click="historyTab = 'all'">全部</span>
+  </div>
+  <div class="history-search">
+    <input type="text" placeholder="搜索" v-model="searchQuery">
+  </div>
+  <div class="history-list">
     <div
-      v-if="showHistory"
-      class="history-dialog"
+      v-for="session in filteredSessions"
+      :key="session.id"
+      class="history-item"
     >
-      <div class="history-header">
-        <h3>聊天历史 ({{ qastore.sessions.length }})</h3>
-        <button @click="showHistory = false">×</button>
-      </div>
-      <div class="history-tabs">
-        <span
-          :class="{ active: historyTab === 'all' }"
-          @click="historyTab = 'all'"
-        >全部</span>
-      </div>
-      <div class="history-search">
-        <input
-          type="text"
-          placeholder="搜索"
-          v-model="searchQuery"
-        >
-      </div>
-      <div class="history-list">
-        <div
-          v-for="session in filteredSessions"
-          :key="session.id"
-          class="history-item"
-        >
-          <div class="session-header">
-            <div
-              class="session-content"
-              @click="selectSession(session)"
-            >
-              <h4>{{ session.title || '未命名对话' }}</h4>
-            </div>
-            <div class="session-actions">
-              <button
-                class="rename-btn"
-                @click.stop="qastore.startRename(session)"
-                title="重命名"
-              >✎</button>
-              <button
-                class="delete-btn"
-                @click.stop="deleteSession(session.id)"
-                title="删除"
-              >×</button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="session-header">
+  <div class="session-content" @click="selectSession(session)">
+    <h4>{{ session.title || '未命名对话' }}</h4>
+  </div>
+  <div class="session-actions">
+    <button class="rename-btn" @click.stop="qastore.startRename(session)" title="重命名">✎</button>
+    <button class="delete-btn" @click.stop="deleteSession(session.id)" title="删除">×</button>
+  </div>
+</div>
+  </div>
+  </div>
 
-      <!-- 重命名模态框 -->
-      <div
-        v-if="qastore.renamingSession"
-        class="rename-modal"
-      >
-        <div class="modal-content">
-          <h3>重命名对话</h3>
-          <input
-            type="text"
-            v-model="qastore.renamingTitle"
-            @keyup.enter="qastore.saveRename"
-            placeholder="输入新标题"
-            ref="renameInput"
-          >
-          <div class="modal-actions">
-            <button @click="qastore.saveRename">保存</button>
-            <button @click="qastore.cancelRename">取消</button>
-          </div>
-        </div>
-      </div>
+  <!-- 重命名模态框 -->
+  <div v-if="qastore.renamingSession" class="rename-modal">
+  <div class="modal-content">
+    <h3>重命名对话</h3>
+    <input 
+      type="text" 
+      v-model="qastore.renamingTitle" 
+      @keyup.enter="qastore.saveRename"
+      placeholder="输入新标题"
+      ref="renameInput"
+    >
+    <div class="modal-actions">
+      <button @click="qastore.saveRename">保存</button>
+      <button @click="qastore.cancelRename">取消</button>
     </div>
+  </div>
+</div>
+</div>
 
     <!-- 选中文本提问弹窗 -->
-    <SelectionIcon
-      v-if="selectionIconVisible"
-      :style="selectionIconStyle"
+   <SelectionIcon 
+      v-if="selectionIconVisible" 
+      :style="selectionIconStyle" 
       @click="showPopup"
     />
 
     <!-- 选中文本提问弹窗 -->
-    <SelectionPopup
-      v-if="popupVisible"
-      :style="popupStyle"
+    <SelectionPopup 
+      v-if="popupVisible" 
+      :style="popupStyle" 
       :selectedText="selectedText"
       @ask="onAskSelection"
       @cancel="popupVisible = false"
@@ -277,30 +215,32 @@
 </template>
 
 <script setup>
-import '@/assets/qa.css'
-import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
+import '@/assets/qa.css' 
+import { ref, computed, nextTick, onMounted ,onUnmounted} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQAClassicStore } from '@/stores/qa-store'
 import { storeToRefs } from 'pinia'
 import { getSelectedText, getSelectionPosition } from '@/utils/selection'
 import SelectionPopup from '@/views/Classic/SelectionPopup.vue'
 import { useCollectedStore } from '@/stores/classic'
-import SelectionIcon from '@/views/Classic/SelectionIcon.vue'
-import Navi from '../components/NaviHomeView.vue'
+import SelectionIcon from '@/views/Classic/SelectionIcon.vue' 
+import Navi from '../components/NaviHomeView2.vue'
 import { getProfileAPI } from '@/apis/user'
 
 const route = useRoute()
 const router = useRouter()
 const qastore = useQAClassicStore()
-const { classic, currentMessages, newMessage, quote, sending, loadingMessage } =
-  storeToRefs(qastore)
+const { classic, currentMessages, newMessage, quote, sending, loadingMessage } = storeToRefs(qastore)
+
+// 定义 profile 变量
 const profile = ref({
   username: '',
   userId: '',
   email: '',
   avatar: '',
 })
-const loadProfile = async () => {
+
+  const loadProfile = async () => {
   try {
     const response = await getProfileAPI()
     if (response.code === 200) {
@@ -311,16 +251,20 @@ const loadProfile = async () => {
   }
 }
 const userId = computed(() => profile.value.userId)
+const defaultAvatar = ref('@/assets/images/logo.png')
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
 
 const collectedStore = useCollectedStore()
 
 // 返回目录方法
 const goBackToClassics = () => {
-  router.push({
-    name: 'Classics',
-    params: {
-      bookId: bookId.value,
-    },
+  router.push({ 
+    name: 'Classics', 
+    params: { 
+      bookId: bookId.value 
+    }
   })
 }
 
@@ -330,12 +274,18 @@ const goBackToClassics = () => {
 //   console.log(classic.value)
 // })
 
-onMounted(async () => {
+onMounted(async() => {
+    profile.value = {
+    username: '',
+    userId: '',
+    email: '',
+    avatar: '',
+  }
+  await loadProfile()
   qastore.fetchClassic(classicIdNum.value)
   qastore.fetchSessions(classicIdNum.value)
-  await loadProfile()
   await collectedStore.fetchCollectedStatus(userId.value, classicIdNum.value)
-  console.log('isCollected', collectedStore.isCollected)
+  console.log('isCollected',collectedStore.isCollected)
 })
 
 const leftWidth = ref(700) // 初始宽度
@@ -360,11 +310,11 @@ onUnmounted(() => {
 
 const handleResize = (e) => {
   if (!isResizing) return
-
+  
   const container = document.querySelector('.classic-container')
   const containerRect = container.getBoundingClientRect()
   const newWidth = e.clientX - containerRect.left
-
+  
   // 限制最小宽度
   leftWidth.value = Math.max(400, Math.min(newWidth, containerRect.width - 400))
 }
@@ -372,10 +322,9 @@ const handleResize = (e) => {
 // 复制方法
 const copyMessage = (content) => {
   const textToCopy = extractFinalAnswer(content)
-  navigator.clipboard
-    .writeText(textToCopy)
+  navigator.clipboard.writeText(textToCopy)
     .then(() => alert('已复制到剪贴板'))
-    .catch((err) => console.error('复制失败:', err))
+    .catch(err => console.error('复制失败:', err))
 }
 
 const stopResize = () => {
@@ -401,7 +350,7 @@ const classicIdNum = computed(() => {
 const editInput = ref(null)
 const isSavingEdit = ref(false)
 const editingTextareaHeight = ref(0)
-const editingStates = ref({})
+const editingStates = ref({}) 
 
 // 选中文字弹窗
 const popupVisible = ref(false)
@@ -416,19 +365,21 @@ const searchQuery = ref('')
 const filteredSessions = computed(() => {
   const query = searchQuery.value.toLowerCase()
   let sessions = [...qastore.sessions]
-
+  
   if (historyTab.value === 'favorites') {
-    sessions = sessions.filter((s) => s.isFavorite)
+    sessions = sessions.filter(s => s.isFavorite)
   }
-
+  
   if (query) {
-    sessions = sessions.filter(
-      (s) => s.title?.toLowerCase().includes(query) || s.preview?.toLowerCase().includes(query)
+    sessions = sessions.filter(s => 
+      s.title?.toLowerCase().includes(query) || 
+      s.preview?.toLowerCase().includes(query)
     )
   }
-
+  
   return sessions
 })
+
 
 const selectionIconVisible = ref(false)
 const selectionIconStyle = ref({})
@@ -440,9 +391,9 @@ const onSelect = () => {
   if (text) {
     selectedText.value = text
     const pos = getSelectionPosition()
-    selectionIconStyle.value = {
-      top: `${pos.y}px`,
-      left: `${pos.x}px`,
+    selectionIconStyle.value = { 
+      top: `${pos.y}px`, 
+      left: `${pos.x}px` 
     }
     selectionIconVisible.value = true
   } else {
@@ -453,9 +404,9 @@ const onSelect = () => {
 // 显示提问弹窗
 const showPopup = () => {
   const pos = getSelectionPosition()
-  popupStyle.value = {
-    top: `${pos.y + 25}px`,
-    left: `${pos.x}px`,
+  popupStyle.value = { 
+    top: `${pos.y + 25}px`, 
+    left: `${pos.x}px` 
   }
   popupVisible.value = true
   selectionIconVisible.value = false
@@ -475,6 +426,7 @@ const onAskSelection = (question) => {
   }
   popupVisible.value = false
 }
+
 
 // 发送、重生、评分
 const sendMessage = (id) => qastore.sendMessage(id)
@@ -518,7 +470,9 @@ const extractFinalAnswer = (content) => {
 const formatThinkContent = (content) => {
   const match = content.match(/<think>([\s\S]*)<\/think>/)
   if (match) {
-    return match[1].replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;')
+    return match[1]
+      .replace(/\n/g, '<br>')
+      .replace(/ {2}/g, '&nbsp;&nbsp;')
   }
   return ''
 }
@@ -551,7 +505,7 @@ const startEdit = (msgId, content) => {
   editingStates.value[msgId] = {
     editing: true,
     editedContent: content,
-    originalContent: content,
+    originalContent: content
   }
   calculateTextareaHeight()
 }
@@ -559,7 +513,8 @@ const startEdit = (msgId, content) => {
 const cancelEdit = (msgId) => {
   if (editingStates.value[msgId]) {
     editingStates.value[msgId].editing = false
-    editingStates.value[msgId].editedContent = editingStates.value[msgId].originalContent
+    editingStates.value[msgId].editedContent = 
+      editingStates.value[msgId].originalContent
   }
 }
 
@@ -567,7 +522,10 @@ const saveEdit = async (msgId) => {
   if (isSavingEdit.value) return
   isSavingEdit.value = true
   try {
-    await qastore.editMessage(msgId, editingStates.value[msgId].editedContent)
+    await qastore.editMessage(
+      msgId,
+      editingStates.value[msgId].editedContent
+    )
     editingStates.value[msgId].editing = false
   } finally {
     isSavingEdit.value = false
@@ -618,9 +576,7 @@ h1 {
   margin: 30px 0 15px;
 }
 
-.original-text,
-.translated-text,
-.notes-text {
+.original-text, .translated-text, .notes-text {
   font-size: 16px;
   line-height: 1.8;
   color: #333;
@@ -640,7 +596,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   z-index: 100;
 }
@@ -683,7 +639,7 @@ h1 {
 /* 聊天区域 */
 .chat-area {
   flex: 1;
-
+  
   overflow-y: auto;
   padding: 20px;
 }
@@ -706,15 +662,9 @@ h1 {
 }
 
 @keyframes ellipsis {
-  0% {
-    content: '.';
-  }
-  33% {
-    content: '..';
-  }
-  66% {
-    content: '...';
-  }
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
 }
 
 .message.temp {
@@ -810,7 +760,7 @@ h1 {
   width: 700px;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
   z-index: 1000;
 }
 
@@ -899,7 +849,7 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -949,8 +899,7 @@ h1 {
   margin-left: 8px;
 }
 
-.rename-btn,
-.delete-btn {
+.rename-btn, .delete-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -960,12 +909,8 @@ h1 {
   color: #999;
 }
 
-.rename-btn:hover {
-  color: #1890ff;
-}
-.delete-btn:hover {
-  color: #ff4d4f;
-}
+.rename-btn:hover { color: #1890ff; }
+.delete-btn:hover { color: #ff4d4f; }
 .edit-wrapper {
   position: relative;
   margin: 8px 0;
@@ -994,12 +939,11 @@ h1 {
   display: flex;
   gap: 8px;
   padding: 8px 12px 12px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), #fff);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.9), #fff);
   border-radius: 0 0 8px 8px;
 }
 
-.btn-save,
-.btn-cancel {
+.btn-save, .btn-cancel {
   padding: 8px 16px;
   border-radius: 4px;
   font-size: 13px;
@@ -1044,9 +988,7 @@ h1 {
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 /** 思考内容容器 */
 .think-container {
@@ -1136,7 +1078,7 @@ h1 {
   margin-right: 5px;
 }
 .copy-btn:hover {
-  color: #2196f3;
+  color: #2196F3;
 }
 /* 调整停止按钮样式 */
 .input-area button[disabled] {
