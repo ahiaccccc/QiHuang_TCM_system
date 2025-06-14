@@ -179,7 +179,7 @@
                 <li @click="useSuggestion('中医如何调理失眠？')">中医如何调理失眠？</li>
                 <li @click="useSuggestion('请解释一下气血不足的表现')">请解释一下气血不足的表现</li>
                 <li @click="useSuggestion('针灸治疗头痛有哪些穴位？')">针灸治疗头痛有哪些穴位？</li>
-                <li @click="useSuggestion('推荐一些适合秋季养生的食疗方')">推荐一些适合秋季养生的食疗方</li>
+                <li @click="useSuggestion('冬虫夏草是什么')">冬虫夏草是什么</li>
 
               </ul>
               <p class="tip">点击上方问题可以直接提问，或者在下方的输入框中输入您的问题</p>
@@ -1686,6 +1686,8 @@ export default {
           `http://localhost:8080/api/chat/conversations/${convId}/rename`,
           {
             title: newTitle,
+
+          },{
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
