@@ -1,9 +1,6 @@
 package com.example.qihuangserver.controller;
 
-import com.example.qihuangserver.dto.user.LoginRequest;
-import com.example.qihuangserver.dto.user.RegisterRequest;
-import com.example.qihuangserver.dto.user.ResetPasswordRequest;
-import com.example.qihuangserver.dto.user.UpdateProfileRequest;
+import com.example.qihuangserver.dto.user.*;
 import com.example.qihuangserver.service.UserService;
 import com.example.qihuangserver.util.Result;
 import jakarta.validation.Valid;
@@ -63,4 +60,14 @@ public class UserController {
         Result result = userService.uploadAvatar(token, file);
         return ResponseEntity.status(result.getCode()).body(result);
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Result> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Result result = userService.changePassword(token, request);
+        return ResponseEntity.status(result.getCode()).body(result);
+    }
+
 }

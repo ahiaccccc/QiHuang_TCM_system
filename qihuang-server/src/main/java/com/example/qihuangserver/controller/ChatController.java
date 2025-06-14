@@ -7,6 +7,7 @@ import com.example.qihuangserver.repository.AttachmentRepository;
 import com.example.qihuangserver.repository.ConversationRepository;
 import com.example.qihuangserver.repository.MessageRepository;
 import com.example.qihuangserver.repository.UserRepository;
+import com.example.qihuangserver.service.BaiduImageRecognitionService;
 import com.example.qihuangserver.service.ConversationService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,10 +37,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -440,6 +438,10 @@ public class ChatController {
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    @Autowired
+    private BaiduImageRecognitionService baiduImageRecognitionService;
+
+    // 修改stream方法
     @PostMapping(value = "/stream", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CrossOrigin(origins = "http://localhost:4000", allowedHeaders = "*", methods = {RequestMethod.POST})
     public SseEmitter streamResponse(
@@ -449,7 +451,6 @@ public class ChatController {
             @RequestParam(value = "conversationId", required = false) Long conversationId,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-
         SseEmitter emitter = new SseEmitter(600_000L);
         StringBuilder fullResponse = new StringBuilder();
 
@@ -464,9 +465,14 @@ public class ChatController {
                 if (file.getContentType().startsWith("text/")) {
                     fileContent = new String(file.getBytes(), StandardCharsets.UTF_8);
                 } else if (file.getContentType().startsWith("image/")) {
-                    fileContent = "[图片文件] 文件名：" + file.getOriginalFilename() + "，大小：" + file.getSize() + "字节";
+                    // 调用百度图像识别
+                    String recognitionResult = baiduImageRecognitionService.recognizeGeneralImage(file);
+                    fileContent = "图片识别结果:\n" + recognitionResult +
+                            "\n文件名：" + file.getOriginalFilename() +
+                            "，大小：" + file.getSize() + "字节";
                 } else {
-                    fileContent = "[文件] 文件名：" + file.getOriginalFilename() + "，类型：" + file.getContentType();
+                    fileContent = "[文件] 文件名：" + file.getOriginalFilename() +
+                            "，类型：" + file.getContentType();
                 }
 
                 Map<String, String> fileMessage = new HashMap<>();
@@ -476,7 +482,7 @@ public class ChatController {
             }
 
             // 保存用户消息并获取/创建对话
-            Conversation conversation = saveUserMessage(userId,messages, conversationId, newConversation);
+            Conversation conversation = saveUserMessage(userId, messages, conversationId, newConversation);
 
             // 异步处理AI回复
             executorService.submit(() -> {
@@ -486,9 +492,22 @@ public class ChatController {
                     headers.setContentType(MediaType.APPLICATION_JSON);
                     headers.setBearerAuth(API_KEY);
 
+
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("model", "DeepSeek-R1");
                     payload.put("messages", messages);
+
+
+                    List<Map<String, String>> formattedMessages = new ArrayList<>();
+                    formattedMessages.addAll(messages);
+
+
+                    Map<String, String> systemMessage = new HashMap<>();
+                    systemMessage.put("role", "system");
+                    systemMessage.put("content", "请按照以下格式回答：首先是一段总体介绍，然后使用【】标注关键点，格式为【关键点名称】: 具体内容。");
+                    formattedMessages.add(systemMessage);
+
+                    payload.put("messages", formattedMessages);
                     payload.put("temperature", 0.7);
                     payload.put("stream", true);
 
@@ -517,7 +536,6 @@ public class ChatController {
                                                         JsonNode contentNode = deltaNode.get("content");
                                                         if (contentNode != null && !contentNode.isNull()) {
                                                             String content = contentNode.asText();
-                                                            // 添加空格处理逻辑
                                                             if (content.matches("[a-zA-Z]+") && !content.endsWith(" ")) {
                                                                 content += " ";
                                                             }

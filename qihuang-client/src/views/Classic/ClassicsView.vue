@@ -1,6 +1,9 @@
 <template>
   <div class="classics">
-    <Navi />
+       <Navi
+    :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+    :nickname="profile.username"
+  />
     <div class="hero-section">
       <div class="main-area">
         <div class="main-area-header">
@@ -62,7 +65,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useClassicStore } from '@/stores/classic'
 import { useBookStore } from '@/stores/book'
-import Navi from '../components/NaviHomeView.vue'
+import Navi from '../components/NaviHomeView2.vue'
+import { getProfileAPI } from '@/apis/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -71,9 +75,31 @@ const bookStore = useBookStore()
 
 const book = ref({})
 const page = ref(1)
-const pageSize = 21
+const pageSize = 18
 const bookId = parseInt(route.params.bookId)
 const inputPage = ref(1) // 新增：用于输入跳转的页码
+
+const profile = ref({
+  username: '',
+  userId: '',
+  email: '',
+  avatar: '',
+})
+
+  const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
+const defaultAvatar = ref('@/assets/images/logo.png')
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
 
 const loadData = async () => {
   try {
@@ -90,6 +116,15 @@ const loadData = async () => {
 }
 
 onMounted(loadData)
+onMounted(() => {
+    profile.value = {
+    username: '',
+    userId: '',
+    email: '',
+    avatar: '',
+  }
+  loadProfile()
+})
 watch(() => route.params.bookId, loadData)
 
  const classics = computed(() => classicStore.classics)
@@ -145,9 +180,9 @@ onMounted(() => {
 watch(page, loadClassics)
 </script>
 
-<style scoped>
-.classic-item {
-  background-color: white;
+<style scoped>.classic-item {
+  position: relative;
+  background-color: #f9faf1; /* 宣纸底色 */
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -155,28 +190,188 @@ watch(page, loadClassics)
   transition: all 0.3s ease;
   border: 1px solid #e0e6ed;
   display: flex;
-  overflow: hidden;
-  position: relative;
+  overflow: visible;
   min-width: 25%;
 }
 
-.classic-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border-color: #a0b8e0;
-}
-
+/* 远山 - 增强层次和对比度 */
 .classic-item::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0;
   left: 0;
+  top: 0;
+  width: 100%;
   height: 100%;
-  width: 6px;
-  background: linear-gradient(to bottom, #4a69bd, #6a89cc);
-  border-radius: 6px 0 0 6px;
+  background: 
+    radial-gradient(circle at 20% 30%, #b6d2c9 0%, transparent 60%),
+    radial-gradient(circle at 75% 40%, #a8cbbf 0%, transparent 55%),
+    radial-gradient(circle at 45% 65%, #9bb9ae 0%, transparent 70%);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
 }
 
+/* 近水 - 增强水流效果 */
+.classic-item::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  width: 100px;
+  height: 50px;
+  background: 
+    linear-gradient(120deg, #d8e8e3 0%, #e6f2ee 50%, #d8e8e3 100%);
+  border-radius: 70% 30% 60% 40%;
+  opacity: 0.65;
+  transform: rotate(8deg);
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 5px rgba(210, 225, 220, 0.8),
+    0 2px 5px rgba(220, 235, 230, 0.5);
+}
+
+/* 新增流动波纹效果 */
+.classic-item::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  width: 100px;
+  height: 50px;
+  background: 
+    linear-gradient(120deg, #d8e8e3 0%, #e6f2ee 50%, #d8e8e3 100%);
+  border-radius: 70% 30% 60% 40%;
+  opacity: 0.65;
+  transform: rotate(8deg);
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 5px rgba(210, 225, 220, 0.8),
+    0 2px 5px rgba(220, 235, 230, 0.5);
+}
+
+/* 新增溪流效果 */
+.classic-item::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  bottom: 25px;
+  width: 40px;
+  height: 15px;
+  background: 
+    linear-gradient(90deg, transparent, #e0f0ea 40%, #e0f0ea 60%, transparent);
+  border-radius: 50%;
+  opacity: 0.6;
+  transform: rotate(-5deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 新增云雾效果 - 调整位置使其更突出 */
+.classic-item::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  background: 
+    radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 45%),
+    radial-gradient(circle at 75% 85%, rgba(255, 255, 255, 0.6) 0%, transparent 40%);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 悬停效果 - 增强山水动效 */
+.classic-item:hover::before {
+  opacity: 0.45;
+  background: 
+    radial-gradient(circle at 20% 30%, #b6d2c9 0%, transparent 62%),
+    radial-gradient(circle at 75% 40%, #a8cbbf 0%, transparent 57%),
+    radial-gradient(circle at 45% 65%, #9bb9ae 0%, transparent 72%);
+}
+
+.classic-item:hover::after {
+  opacity: 0.75;
+  transform: rotate(10deg) scale(1.02);
+}
+.classic-item {
+  position: relative;
+  background-color: #f9faf2; /* 宣纸底色 */
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e6ed;
+  display: flex;
+  overflow: visible;
+  min-width: 25%;
+}
+
+/* 远山 - 更淡的青绿色调 */
+.classic-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 30%, #d8e6e3 0%, transparent 55%),
+    radial-gradient(circle at 70% 45%, #d4e8e0 0%, transparent 60%),
+    radial-gradient(circle at 45% 70%, #d2e6de 0%, transparent 75%);
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 近水 - 超淡的波纹 */
+.classic-item::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  width: 90px;
+  height: 45px;
+  background: 
+    linear-gradient(135deg, rgba(235, 245, 243, 0.8), rgba(240, 248, 246, 0.9));
+  border-radius: 60% 30% 55% 35%;
+  opacity: 0.5;
+  transform: rotate(5deg);
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 3px rgba(220, 235, 230, 0.7);
+}
+
+/* 增添云雾效果 */
+.classic-item::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  background: 
+    radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.6) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 30%);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 悬停效果增强 */
+.classic-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 215, 210, 0.2);
+  background-color: #fbfcf7;
+}
 .classic-info {
   flex: 1;
   padding-left: 15px;

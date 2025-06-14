@@ -2,9 +2,9 @@ import request from '@/utils/http'
 
 export const registerAPI = (registerRequest) => {
   return request({
-    url: '/user/register',  // 与后端接口保持一致
+    url: '/user/register',
     method: 'POST',
-    data: registerRequest
+    data: registerRequest,
   })
 }
 
@@ -12,7 +12,7 @@ export const loginAPI = (loginRequest) => {
   return request({
     url: '/user/login',
     method: 'POST',
-    data: loginRequest
+    data: loginRequest,
   })
 }
 
@@ -20,14 +20,14 @@ export const emailResetPasswordAPI = (resetPasswordRequest) => {
   return request({
     url: '/user/email-reset-password',
     method: 'POST',
-    data: resetPasswordRequest
+    data: resetPasswordRequest,
   })
 }
 
 export const getProfileAPI = () => {
   return request({
     url: '/user/profile',
-    method: 'GET'
+    method: 'GET',
   })
 }
 
@@ -35,7 +35,7 @@ export const updateProfileAPI = (data) => {
   return request({
     url: '/user/update-profile',
     method: 'POST',
-    data
+    data,
   })
 }
 
@@ -44,8 +44,16 @@ export const uploadAvatarAPI = (formData) => {
     url: '/user/upload-avatar',
     method: 'POST',
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data',
     },
-    data: formData
+    data: formData,
+  })
+}
+
+export const changePasswordAPI = (data) => {
+  return request({
+    url: '/user/change-password',
+    method: 'POST',
+    data,
   })
 }

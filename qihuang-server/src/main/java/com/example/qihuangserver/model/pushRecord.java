@@ -3,7 +3,10 @@ package com.example.qihuangserver.model;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import jakarta.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,26 +15,26 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "push_record")
-public class pushRecord {
+public class PushRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 
     @Column(name = "herb_id")
-    private Integer herbId;
+    private String herbId;
 
     @Column(name = "push_date")
     @Temporal(TemporalType.DATE)
-    private Date pushDate;
+    private LocalDate pushDate;
 
     @Column(name = "blessing", columnDefinition = "TEXT")
     private String blessing;
 
     @Column(name = "created_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdTime;
+    private LocalDateTime createdTime;
 }

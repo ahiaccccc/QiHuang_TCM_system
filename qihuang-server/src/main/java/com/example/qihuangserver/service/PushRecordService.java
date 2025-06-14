@@ -1,10 +1,12 @@
 package com.example.qihuangserver.service;
 
-import com.example.qihuangserver.model.pushRecord;
+import com.example.qihuangserver.model.PushRecord;
 import com.example.qihuangserver.repository.PushRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -14,11 +16,11 @@ public class PushRecordService {
     private PushRecordRepository pushRecordRepository;
 
 
-    public Optional<pushRecord> findById(Integer id) {
+    public Optional<PushRecord> findById(Integer id) {
         return pushRecordRepository.findById(id);
     }
 
-    public pushRecord save(pushRecord pushRecord) {
+    public PushRecord save(PushRecord pushRecord) {
         return pushRecordRepository.save(pushRecord);
     }
 
@@ -26,4 +28,11 @@ public class PushRecordService {
         pushRecordRepository.deleteById(id);
     }
 
+    public PushRecord isPushed(Long userId, LocalDate date) {
+        return pushRecordRepository.findByUserIdAndPushDate(userId , date);
+    }
+
+    public Optional<PushRecord> findByUserIdAndPushDate(Long userId, LocalDate date) {
+        return Optional.ofNullable(pushRecordRepository.findByUserIdAndPushDate(userId, date));
+    }
 }

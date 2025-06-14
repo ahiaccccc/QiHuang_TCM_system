@@ -1,45 +1,86 @@
-import axios from 'axios'
+import request from '@/utils/http'
 
 export function getClassic(id) {
-return axios.get(`/api/classics/${id}`)
-.then(res => res.data)
+  return request({
+    url: `/classics/${id}`,
+    method: 'GET'
+  }).then(res => res)
 }
+
 export function getSessions(classicId, userId) {
-return axios.get(`/api/qa/sessions`, { params: { classicId, userId } })
-.then(res => res.data)
+  return request({
+    url: '/qa/sessions',
+    method: 'GET',
+    params: { classicId, userId }
+  }).then(res => res)
 }
+
 export function getMessages(sessionId) {
-return axios.get(`/api/qa/messages`, { params: { sessionId } })
-.then(res => res.data)
+  return request({
+    url: '/qa/messages',
+    method: 'GET',
+    params:  {sessionId }
+  }).then(res => res)
 }
+
 export function createSession(classicId, userId, firstQuestion) {
-return axios.post(`/api/qa/sessions`, null, { params: { classicId, userId, firstQuestion } })
-.then(res => res.data)
+  return request({
+    url: '/qa/sessions',
+    method: 'POST',
+    params: { classicId, userId, firstQuestion }
+  }).then(res => res)
 }
+
 export function createMessage(sessionId, content, role, parentId = null) {
-return axios.post(`/api/qa/messages`, { sessionId, content, role, parentId })
-.then(res => res.data)
+  return request({
+    url: '/qa/messages',
+    method: 'POST',
+    data: {sessionId, content, role, parentId } 
+  }).then(res => res)
 }
+
 export function deleteSession(id) {
-return axios.delete(`/api/qa/sessions/${id}`)
+  return request({
+    url: `/qa/sessions/${id}`,
+    method: 'DELETE'
+  })
 }
+
 export function deleteMessage(id) {
-return axios.delete(`/api/qa/messages/${id}`)
+  return request({
+    url: `/qa/messages/${id}`,
+    method: 'DELETE'
+  })
 }
+
 export function updateMessage(id, newContent) {
-return axios.put(`/api/qa/messages/${id}`, { newContent })
-.then(res => res.data)
+  return request({
+    url: `/qa/messages/${id}`,
+    method: 'PUT',
+    data:  newContent 
+  }).then(res => res)
 }
+
 export function regenerateMessage(messageId) {
-return axios.post(`/api/qa/regenerate`, null, { params: { messageId } })
-.then(res => res.data)
+  return request({
+    url: '/qa/regenerate',
+    method: 'POST',
+    data:  { messageId }
+  }).then(res => res)
 }
+
 export function sendFeedback(messageId, feedback) {
-return axios.post(`/api/qa/feedback`, null, { params: { messageId, feedback } })
+  return request({
+    url: '/qa/feedback',
+    method: 'POST',
+    params: { messageId, feedback }
+  })
 }
-// 重命名接口
+
 export function renameSession(sessionId, newTitle) {
-    return axios.put(`/api/qa/sessions/rename/${sessionId}`, { 
-        newTitle 
-    }).then(res => res.data);
+  return request({
+    url: `/qa/sessions/rename/${sessionId}`,
+    method: 'PUT',
+    data: { newTitle }
+  }).then(res => res)
 }

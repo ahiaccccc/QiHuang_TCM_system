@@ -1,7 +1,7 @@
 package com.example.qihuangserver.service;
 
 import com.example.qihuangserver.model.Classic;
-import com.example.qihuangserver.model.ClassicSimpleDTO;
+import com.example.qihuangserver.dto.classics.ClassicSimpleDTO;
 import com.example.qihuangserver.repository.ClassicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

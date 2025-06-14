@@ -1,13 +1,20 @@
 <template>
   <div class="login-container">
-    <img class="back-image" :src="back" alt="Background" />
+    <img
+      class="back-image"
+      :src="back"
+      alt="Background"
+    />
     <Navi />
 
     <div class="login-content">
       <div class="login-card">
         <h2 class="login-title">登录</h2>
 
-        <form @submit.prevent="handleLogin" class="login-form">
+        <form
+          @submit.prevent="handleLogin"
+          class="login-form"
+        >
           <div class="form-group">
             <label class="input-label">邮箱</label>
             <input
@@ -31,15 +38,25 @@
           </div>
 
           <div class="form-actions-container">
-            <router-link to="/register" class="line-button form-actions-start">
+            <router-link
+              to="/register"
+              class="line-button form-actions-start"
+            >
               前往注册
             </router-link>
-            <router-link to="/forgetPassword" class="line-button form-actions-end">
+            <router-link
+              to="/forgetPassword"
+              class="line-button form-actions-end"
+            >
               忘记密码？
             </router-link>
           </div>
 
-          <button type="submit" class="submit-btn" :disabled="loading">
+          <button
+            type="submit"
+            class="submit-btn"
+            :disabled="loading"
+          >
             {{ loading ? '登录中...' : '确定' }}
           </button>
         </form>
@@ -69,10 +86,13 @@ const loading = ref(false)
 
 const handleLogin = async () => {
   loading.value = true
+  console.log('登录中')
 
   try {
     const response = await loginAPI(loginForm.value)
+    console.log('登录响应:', response)
     if (response.code === 200) {
+      console.log('登录成功:', response.data)
       setToken(response.data.token)
 
       router.push('/profile')
@@ -165,7 +185,6 @@ const handleLogin = async () => {
   font-size: 1rem;
   font-weight: 500;
   color: #444;
-
 }
 
 .form-input {
@@ -193,9 +212,6 @@ const handleLogin = async () => {
   text-decoration: underline;
 }
 
-=======
-}
-
 .form-input {
   padding: 0.8rem 1rem;
   border: 1px solid #ddd;
@@ -220,7 +236,6 @@ const handleLogin = async () => {
   color: #03a6ba;
   text-decoration: underline;
 }
-
 
 .line-button {
   color: #666;

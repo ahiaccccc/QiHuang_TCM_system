@@ -1,11 +1,17 @@
 <template>
   <div class="home-container">
-    <Navi :avatar="getAvatarUrl(profile.avatar) || defaultAvatar" :nickname="profile.username" />
+    <Navi
+      :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+      :nickname="profile.username"
+    />
     <div class="home-content">
       <h2 class="page-title">个人主页</h2>
       <div class="profile-container">
         <div class="avatar-section">
-          <img :src="getAvatarUrl(profile.avatar) || defaultAvatar" class="avatar" />
+          <img
+            :src="getAvatarUrl(profile.avatar) || defaultAvatar"
+            class="avatar"
+          />
           <input
             type="file"
             ref="avatarInput"
@@ -13,8 +19,14 @@
             @change="handleAvatarUpload"
             style="display: none"
           />
-          <button @click="$refs.avatarInput.click()" class="avater-btn">更换头像</button>
-          <span v-if="avatarUploading" class="uploading-text">上传中...</span>
+          <button
+            @click="$refs.avatarInput.click()"
+            class="avater-btn"
+          >更换头像</button>
+          <span
+            v-if="avatarUploading"
+            class="uploading-text"
+          >上传中...</span>
         </div>
         <div class="info-section">
           <!-- 用户名 - 编辑时变为输入框 -->
@@ -40,15 +52,58 @@
 
           <div class="action-buttons">
             <template v-if="!isEditing">
-              <button class="edit-btn" @click="startEditing">编辑资料</button>
-              <button class="reset-btn" @click="resetPassword">重置密码</button>
+              <button
+                class="edit-btn"
+                @click="startEditing"
+              >编辑资料</button>
+              <button
+                class="reset-btn"
+                @click="resetPassword"
+              >修改密码</button>
             </template>
             <template v-else>
-              <button class="edit-btn" @click="handleSubmit">保存</button>
-              <button class="reset-btn" @click="cancelEdit">取消</button>
+              <button
+                class="edit-btn"
+                @click="handleSubmit"
+              >保存</button>
+              <button
+                class="reset-btn"
+                @click="cancelEdit"
+              >取消</button>
             </template>
           </div>
         </div>
+      </div>
+      <div class="badge-wall">
+        <h3 class="badge-title">我的勋章</h3>
+        <div
+          class="badge-container"
+          v-if="profile.userId == 100000006"
+        >
+
+          <div
+            class="badge-item"
+            v-for="badge in badges"
+            :key="badge.id"
+          >
+            <img
+              :src="badge.image"
+              class="badge-image"
+              alt="Badge Image"
+            />
+            <div class="badge-info">
+              <h4 class="badge-name">{{ badge.name }}</h4>
+              <p class="badge-desc">{{ badge.description }}</p>
+            </div>
+          </div>
+
+        </div>
+        <div v-else>
+          <p>暂无勋章</p>
+        </div>
+      </div>
+      <div class="profile-container1">
+        <userCollections />
       </div>
     </div>
   </div>
@@ -60,11 +115,36 @@ import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import Navi from '../components/NaviHomeView.vue'
 import defaultAvatar from '../../assets/images/defaultAvatar.png'
+import userCollections from '@/views/Classic/userCollections.vue'
 
 import { getProfileAPI, updateProfileAPI, uploadAvatarAPI } from '@/apis/user'
 
 const router = useRouter()
 const message = useMessage()
+
+//---------勋章-----
+const badges = ref([
+  {
+    id: 1,
+    name: '小试牛刀',
+    description: '答题正确率达到过80%',
+    image: '../public/80.png',
+  },
+  {
+    id: 2,
+    name: '经络通明',
+    description: '答题正确率达到过90%',
+    image: '../public/90.png',
+  },
+  {
+    id: 3,
+    name: '神农传人',
+    description: '答题正确率达到过100%',
+    image: '../public/100.png',
+  },
+])
+
+//-----------------
 
 const profile = ref({
   username: '',
@@ -186,7 +266,7 @@ const handleAvatarUpload = async (e) => {
 }
 
 const resetPassword = () => {
-  router.push('/forgetPassword')
+  router.push('/changePassword')
 }
 
 onMounted(async () => {
@@ -194,6 +274,68 @@ onMounted(async () => {
 })
 </script>
 <style scoped>
+/* ---------勋章-------- */
+.badge-wall {
+  width: 80%;
+  margin: 30px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.badge-title {
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.badge-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.badge-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.badge-info {
+  text-align: center;
+}
+
+.badge-name {
+  color: #35565a;
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.badge-desc {
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* ----------------------- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -260,6 +402,13 @@ onMounted(async () => {
   padding: 2% 0;
 }
 
+.profile-container1 {
+  width: 80%;
+  background-color: #ffffff;
+  margin: 5% auto;
+  /* justify-content: center; */
+  padding: 2% 0;
+}
 .avatar-section {
   margin: 20px;
   display: flex;

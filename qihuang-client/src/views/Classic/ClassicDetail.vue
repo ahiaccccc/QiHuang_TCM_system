@@ -1,5 +1,8 @@
 <template>
-  <Navi />
+    <Navi
+    :avatar="getAvatarUrl(profile.avatar) || defaultAvatar"
+    :nickname="profile.username"
+  />
   <div class="classic-container">
     
     <!-- 典籍内容展示区域 -->
@@ -10,8 +13,8 @@
     >
       <div class="book-header">
         <h1>{{ classic==null?'':classic.title }}</h1>
-            <button @click="goBackToClassics" class="back-button">
-      <i class="fas fa-book"></i> 返回目录
+      <button @click="goBackToClassics" class="function-button">
+      返回目录
     </button>
         <button @click="toggleCollected" class="star-button">
   <span :class="{ collected: isCollected }">★</span>
@@ -20,10 +23,6 @@
       <div class="text-section">
         <h3>原文</h3>
         <div class="original-text">{{ classic==null?'':classic.originalText }}</div>
-        <h3>白话文</h3>
-        <div class="translated-text">{{ classic==null?'':classic.vernacularText }}</div>
-        <h3>英文翻译</h3>
-        <div class="notes-text">{{ classic==null?'':classic.translateText }}</div>
       </div>
     </div>
 
@@ -225,14 +224,40 @@ import { getSelectedText, getSelectionPosition } from '@/utils/selection'
 import SelectionPopup from '@/views/Classic/SelectionPopup.vue'
 import { useCollectedStore } from '@/stores/classic'
 import SelectionIcon from '@/views/Classic/SelectionIcon.vue' 
-import Navi from '../components/NaviHomeView.vue'
+import Navi from '../components/NaviHomeView2.vue'
+import { getProfileAPI } from '@/apis/user'
+import { useMessage } from 'naive-ui'
 
 const route = useRoute()
 const router = useRouter()
 const qastore = useQAClassicStore()
+const message = useMessage()
 const { classic, currentMessages, newMessage, quote, sending, loadingMessage } = storeToRefs(qastore)
 
-const userId = 1 // 默认用户
+// 定义 profile 变量
+const profile = ref({
+  username: '',
+  userId: '',
+  email: '',
+  avatar: '',
+})
+
+  const loadProfile = async () => {
+  try {
+    const response = await getProfileAPI()
+    if (response.code === 200) {
+      profile.value = response.data
+    }
+  } catch (error) {
+    console.error('加载个人信息失败:', error)
+  }
+}
+const userId = computed(() => profile.value.userId)
+const defaultAvatar = ref('@/assets/images/logo.png')
+const getAvatarUrl = (avatar) => {
+  return avatar ? `http://localhost:8080${avatar}` : null
+}
+
 const collectedStore = useCollectedStore()
 
 // 返回目录方法
@@ -252,12 +277,16 @@ const goBackToClassics = () => {
 // })
 
 onMounted(async() => {
+    profile.value = {
+    username: '',
+    userId: '',
+    email: '',
+    avatar: '',
+  }
+  await loadProfile()
   qastore.fetchClassic(classicIdNum.value)
   qastore.fetchSessions(classicIdNum.value)
-  
-  
-  await collectedStore.fetchCollectedStatus(userId, classicIdNum.value)
-
+  await collectedStore.fetchCollectedStatus(userId.value, classicIdNum.value)
   console.log('isCollected',collectedStore.isCollected)
 })
 
@@ -307,7 +336,7 @@ const stopResize = () => {
 
 const toggleCollected = () => {
   const title = classic.value.title || '未知标题'
-  collectedStore.toggle(userId, classicIdNum.value, title)
+  collectedStore.toggle(userId.value, classicIdNum.value, title)
 }
 
 const isCollected = computed(() => collectedStore.isCollected)
@@ -404,11 +433,15 @@ const onAskSelection = (question) => {
 // 发送、重生、评分
 const sendMessage = (id) => qastore.sendMessage(id)
 const regenerate = (id) => qastore.regenerate(id)
-const rate = (id, feedback) => qastore.rate(id, feedback)
+
+const rate = (id, feedback) => {
+  qastore.rate(id, feedback)
+  message.success(`感谢您的反馈！已标记为 ${feedback === 'good' ? '好评' : '差评'}`)
+}
 
 // 删除消息
 const deleteMsg = (id) => {
-  if (confirm('确定删除该消息及其所有后续对话吗？')) {
+  if (confirm('确定删除该消息及其所有后续对话吗？删除后将无法恢复')) {
     qastore.deleteMessage(id)
   }
 }
@@ -514,20 +547,6 @@ const selectSession = async (session) => {
 </script>
 
 <style scoped>
-/* .classic-container::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("https://c.animaapp.com/m9pqi0c3GNaMeT/img/back.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.3; 
-  z-index: -1;
-} */
 .book-header {
   display: flex;
   justify-content: space-between;
@@ -856,8 +875,8 @@ h1 {
 }
 
 .modal-content input {
-  width: 100%;
-  padding: 10px;
+  width: 92%;
+  padding: 4%;
   margin: 10px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
