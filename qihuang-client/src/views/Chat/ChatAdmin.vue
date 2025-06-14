@@ -2,7 +2,14 @@
 <template>
   <div class="admin-conversations">
     <div class="header">
+      <div class="header-left">
+        <button class="refresh-btn" @click="goBack">
+          <i class="fas fa-arrow-left"></i> 返回
+        </button>
+
+      </div>
       <h1>用户对话管理</h1>
+
       <button
         class="refresh-btn"
         @click="fetchConversations"
@@ -153,6 +160,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useAdminConversationStore } from '@/stores/adminConversationStore';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter();
 
 const store = useAdminConversationStore();
 const conversations = computed(() => store.conversations);
@@ -170,6 +181,9 @@ const isDeletingMessage = ref(false);
 
 const fetchConversations = () => {
   store.fetchAllConversations();
+};
+const goBack = () => {
+  router.push('/profile');
 };
 
 const showMessages = async (convId) => {
@@ -698,8 +712,38 @@ h1 {
 }
 
 
+.back-btn {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
 
+.back-btn:hover {
+  background-color: #e0e0e0;
+  transform: translateX(-2px);
+}
 
+.back-btn i {
+  font-size: 14px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
 
 </style>
