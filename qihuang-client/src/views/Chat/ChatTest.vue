@@ -376,6 +376,19 @@
                       class="speaking-indicator"
                     >🔴</span>
                   </button>
+                  <button
+    @click="toggleLike(index)"
+    class="icon-btn"
+    :disabled="likedMessages.includes(index)"
+  >
+    <img
+
+      src="@/assets/images/点赞 (1).png"
+      alt="like"
+      class="icon-img"
+    >
+
+  </button>
                 </div>
 
                 <!-- 语言选择下拉菜单 -->
@@ -1008,9 +1021,13 @@ export default {
       const currentIndex = this.likedMessages.indexOf(index)
       if (currentIndex === -1) {
         this.likedMessages.push(index)
+
+        alert('感谢您的点赞！')
+
         this.$message.success('感谢您的点赞！')
       } else {
         this.likedMessages.splice(currentIndex, 1)
+        this.$message.success('感谢您的点赞！')
       }
     },
 
