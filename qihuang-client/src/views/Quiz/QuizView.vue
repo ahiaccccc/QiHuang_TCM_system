@@ -139,6 +139,73 @@ const activeRecord = ref(null) // 存储激活的记录详情
 const quizStore = useQuizStore()
 const router = useRouter()
 
+// const computedQuizList = computed(() => {
+//   // 如果有激活的答题，只返回激活的类别
+//   if (isActivating.value && activeClassId.value) {
+//     const activeClass = classList.value.find((c) => c.id === activeClassId.value)
+//     if (activeClass && activeRecord.value) {
+//       // 计算答题进度
+//       const answers = activeRecord.value.answers || ''
+//       const total = answers.length
+//       const answered = answers.replace(/\*/g, '').length
+//       const progress = total > 0 ? ((answered / total) * 100).toFixed(2) + '%' : '0%'
+
+//       // 确定测试类型
+//       const mode = activeRecord.value.playMode === 'PRACTICE' ? '练习' : '排位赛'
+
+//       return [
+//         {
+//           id: activeClass.id,
+//           title: activeClass.className,
+//           progress, // 使用progress字段
+//           mode, // 使用mode字段
+//         },
+//       ]
+//     }
+//     return []
+//   }
+
+//   // 没有激活答题时，计算所有类别的历史最高正确率和测试次数
+//   return classList.value.map((cls) => {
+//     // 过滤出当前类别的历史记录
+//     const records = historyList.value.filter(
+//       (record) => record.classId === cls.id && record.activating === 0
+//     )
+
+//     let highestRate = 0 // 历史最高正确率
+//     let recordCount = records.length // 测试次数
+
+//     // 计算历史最高正确率
+//     if (records.length > 0) {
+//       records.forEach((record) => {
+//         const correctStr = record.correct || ''
+//         const total = correctStr.length
+
+//         if (total > 0) {
+//           // 计算1的个数（正确答题数）
+//           const correctNum = (correctStr.match(/1/g) || []).length
+//           const rate = (correctNum / total) * 100
+//           // console.log(`类别ID: ${cls.id}, 正确率: ${rate.toFixed(2)}%`)
+
+//           // 更新最高正确率
+//           if (rate > highestRate) {
+//             highestRate = rate
+//           }
+//         }
+//       })
+//     }
+
+//     // 格式化正确率字符串
+//     const rateStr = records.length > 0 ? highestRate.toFixed(2) + '%' : '0%'
+
+//     return {
+//       id: cls.id,
+//       title: cls.className,
+//       rate: rateStr, // 历史最高正确率
+//       count: recordCount, // 测试次数
+//     }
+//   })
+// })
 const computedQuizList = computed(() => {
   // 如果有激活的答题，只返回激活的类别
   if (isActivating.value && activeClassId.value) {
@@ -167,13 +234,13 @@ const computedQuizList = computed(() => {
 
   // 没有激活答题时，计算所有类别的历史最高正确率和测试次数
   return classList.value.map((cls) => {
-    // 过滤出当前类别的历史记录
+    // 过滤出当前类别的历史记录，只计算RANK模式的记录
     const records = historyList.value.filter(
-      (record) => record.classId === cls.id && record.activating === 0
+      (record) => record.classId === cls.id && record.activating === 0 && record.playMode === 'RANK'
     )
 
     let highestRate = 0 // 历史最高正确率
-    let recordCount = records.length // 测试次数
+    let recordCount = records.length // 测试次数（只计算RANK模式）
 
     // 计算历史最高正确率
     if (records.length > 0) {
@@ -202,7 +269,7 @@ const computedQuizList = computed(() => {
       id: cls.id,
       title: cls.className,
       rate: rateStr, // 历史最高正确率
-      count: recordCount, // 测试次数
+      count: recordCount, // 测试次数（只计算RANK模式）
     }
   })
 })
