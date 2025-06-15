@@ -49,6 +49,8 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:4000")
 @RequestMapping("/api/chat")
 public class ChatController {
+    private final String API_URL = "http://10.2.8.77:3000/v1/chat/completions";
+    private final String API_KEY = "sk-93nWYhI8SrnXad5m9932CeBdDeDf4233B21d93D217095f22";
     @Autowired
     private ConversationRepository conversationRepository;
     @Autowired
@@ -66,8 +68,12 @@ public class ChatController {
 
     private static final Logger logger = Logger.getLogger(ChatController.class.getName());
 
-    private final String API_URL = "http://10.2.8.77:3000/v1/chat/completions";
-    private final String API_KEY = "sk-93nWYhI8SrnXad5m9932CeBdDeDf4233B21d93D217095f22";
+
+    private final String API_URL1 = "http://222.206.4.166/v1/chat-messages";
+    private final String API_KEY1 = "app-UgscrmyvFBSbvsaEmroFrrxF";
+
+
+
     @Autowired
     private ConversationService conversationService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -104,8 +110,8 @@ public class ChatController {
             System.out.println("原始文本: " + text);
 
             // 百度翻译API配置
-            String appId = "20250530002370147"; // 替换为你的百度翻译APP ID
-            String secretKey = "m2zbn51zlKrUByZoLe6K"; // 替换为你的百度翻译密钥
+            String appId = "20250530002370147";
+            String secretKey = "m2zbn51zlKrUByZoLe6K";
             String apiUrl = "https://fanyi-api.baidu.com/api/trans/vip/translate";
 
             // 生成随机数
@@ -219,6 +225,11 @@ public class ChatController {
             @RequestParam(value = "newConversation", defaultValue = "false") boolean newConversation,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
+
+        Map<String, Object> payload1 = new HashMap<>();
+        payload1.put("model", "QiHuang");
+        payload1.put("temperature", 0.7);
+        payload1.put("stream", true);
         RestTemplate restTemplate = new RestTemplate();
         logger.log(Level.INFO, "Request Messages: " + messagesJson);
 
@@ -256,6 +267,10 @@ public class ChatController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(API_KEY);
+
+
+
+
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("model", "DeepSeek-R1");
@@ -493,17 +508,27 @@ public class ChatController {
                     headers.setBearerAuth(API_KEY);
 
 
-                    Map<String, Object> payload = new HashMap<>();
-                    payload.put("model", "DeepSeek-R1");
-                    payload.put("messages", messages);
+                    Map<String, Object> payload1 = new HashMap<>();
+                    payload1.put("model", "QiHuang");
+                    payload1.put("messages", messages);
+
+
+                    payload1.put("temperature", 0.7);
+                    payload1.put("stream", true);
 
 
                     List<Map<String, String>> formattedMessages = new ArrayList<>();
                     formattedMessages.addAll(messages);
 
 
+
+
+
                     Map<String, String> systemMessage = new HashMap<>();
                     systemMessage.put("role", "system");
+                    Map<String, Object> payload = new HashMap<>();
+                    payload.put("model", "DeepSeek-R1");
+                    payload.put("messages", messages);
                     systemMessage.put("content", "请按照以下格式回答：首先是一段总体介绍，然后使用【】标注关键点，格式为【关键点名称】: 具体内容。");
                     formattedMessages.add(systemMessage);
 
@@ -695,7 +720,7 @@ public class ChatController {
     }
 
 
-    //上传附件
+
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadAttachment(
             @RequestParam("file") MultipartFile file,
@@ -713,6 +738,8 @@ public class ChatController {
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String uniqueName = UUID.randomUUID().toString() + fileExtension;
+            String a=API_KEY1;
+            String b=API_URL1;
             String filePath = tempDir + uniqueName;
 
             // 保存文件到临时目录

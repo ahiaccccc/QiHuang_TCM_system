@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -21,12 +22,12 @@ public class ConversationController {
         Conversation savedConversation = conversationService.saveConversation(conversation);
         return new ResponseEntity<>(savedConversation, HttpStatus.CREATED);
     }
-
     // 根据ID获取对话
     @GetMapping("/{convId}")
     public ResponseEntity<Conversation> getConversation(@PathVariable Long convId) {
         return ResponseEntity.ok(conversationService.getConversationById(convId));
     }
+
 
     // 获取所有对话
     @GetMapping

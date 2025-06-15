@@ -527,8 +527,8 @@ export default {
           id: 2,
           name: '中医世家',
           description: '中医经典古籍在线阅读',
-          url: 'https://www.zysj.com.cn/',
-          icon: 'https://www.zysj.com.cn/favicon.ico',
+          url: 'http://www.zlnow.com/',
+          icon: 'http://www.zlnow.com/favicon.ico',
         },
         {
           id: 3,
@@ -558,6 +558,8 @@ export default {
           url: 'https://acupuncturetoday.com/',
           icon: 'https://acupuncturetoday.com/favicon.ico',
         },
+
+
       ],
       showCollectionsView: false,
       collections: [],
@@ -1342,7 +1344,6 @@ export default {
         this.messages.push(newMessage)
         this.currentStreamingMessage = newMessage
 
-        // 在 sendMessage 方法中修改处理逻辑
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
@@ -1745,7 +1746,7 @@ export default {
           },
         })
         .then((response) => {
-          // 你可以根据 API 的返回结构来决定如何处理响应
+          // 根据 API 的返回结构来决定如何处理响应
           if (response && response.status === 200) {
             // 立刻从当前对话列表中移除已删除的会话
             this.conversations = this.conversations.filter((conv) => conv.id !== convId)
@@ -1969,12 +1970,12 @@ export default {
 .conversation-wrapper.active {
   width: 280px;
   height: 5%;
-  margin-left: 16px; /* Instead of left:16px for proper layout */
+  margin-left: 16px;
   border-right: 1px solid #4a90e2;
   border-radius: 57px;
   background-color: rgba(232, 239, 238, 1);
-  border: none; /* Remove previous border */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds subtle depth */
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .conversation-wrapper:hover {
   border-color: #4a90e2;
